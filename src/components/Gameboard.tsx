@@ -7,16 +7,14 @@ interface BoardProps {
   board: Array<Array<string>>;
   dailyWord: string;
   currentRow: number;
-  yellowLetters: Array<string>;
-  greenLetters: Array<string>;
+  duplicateLetters: Array<{ symbol: string; indices: Array<number> }>;
 }
 
 const Gameboard = ({
   board,
   dailyWord,
   currentRow,
-  yellowLetters,
-  greenLetters,
+  duplicateLetters,
 }: BoardProps) => {
   return (
     <div className="gameboard">
@@ -26,8 +24,7 @@ const Gameboard = ({
           boardRow={board[rowIndex]}
           active={rowIndex === currentRow ? true : false}
           dailyWord={dailyWord}
-          yellowLetters={yellowLetters}
-          greenLetters={greenLetters}
+          duplicateLetters={duplicateLetters}
         />
       ))}
     </div>

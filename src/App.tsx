@@ -1,16 +1,21 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
 import WORDS from "./words.json";
+import LetterSlot from "./components/LetterSlot";
 
 // if word only has one instance of a letter, make sure that other copies of the letter dont turn yellow
 // im thinking we should turn board into an array of objects with letter+color so that we can pass down the color to keyboard
 
 function App() {
   const [wordLength, setWordLength] = useState(5);
-  const [dailyWord, setDailyWord] = useState("apple");
   const [maxGuesses, setMaxGuesses] = useState(6);
+  const [dailyWord, setDailyWord] = useState("");
+  const [duplicateLetters, setDuplicateLetters] = useState<
+    Array<{ symbol: string; indices: Array<number> }>
+  >([]);
 
   const [board, setBoard] = useState(
     createDefaultBoard(wordLength, maxGuesses)
@@ -76,6 +81,41 @@ function App() {
     }
   }
 
+  // goal is to grab duplicate letters and their respective indices
+  // so that i can evaluate whether a slot on the board is yellow or green
+  function getDuplicateLetters(word: string) {
+    const wordArr = word.split("");
+    let dupes: string[] = [];
+
+    wordArr.forEach((char) => {
+      if (dupes.includes(char)) return;
+      let indices: number[] = [];
+      let count = wordArr.filter((letter) => letter === char).length;
+
+      if (count > 1) {
+        dupes.push(char);
+        // get indices of all recurring letters
+        wordArr.forEach((letter, index) => {
+          if (letter === char) indices.push(index);
+        });
+        setDuplicateLetters([
+          ...duplicateLetters,
+          { symbol: char, indices: indices },
+        ]);
+      }
+    });
+  }
+
+  async function fetchDailyWord() {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setDailyWord("apple");
+    getDuplicateLetters("apple");
+  }
+
+  useEffect(() => {
+    fetchDailyWord();
+  }, []);
+
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
       {currentGuess}
@@ -83,8 +123,7 @@ function App() {
         board={board}
         dailyWord={dailyWord}
         currentRow={currentRow}
-        yellowLetters={yellowLetters}
-        greenLetters={greenLetters}
+        duplicateLetters={duplicateLetters}
       />
       <Keyboard board={board} />
     </div>
