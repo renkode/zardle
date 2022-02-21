@@ -62,17 +62,17 @@ function App() {
 
   function handleKeyDown(e: any) {
     if (playedToday) return;
-    const key = e.key.toUpperCase();
-    const regex = /^[A-Z]a{0,1}$/;
-    const input = currentGuess;
+    const key = e.key.toLowerCase();
+    const regex = /^[a-z]a{0,1}$/;
+    const input = currentGuess.toLowerCase();
     // check if key pressed is a-z/A-Z/backspace/delete
     if (key.match(regex)) {
       // add letter
       if (input.length < wordLength) setCurrentGuess(input.concat("", key));
-    } else if (key === "BACKSPACE" || key === "DELETE") {
+    } else if (key === "backspace" || key === "delete") {
       // delete letter
       setCurrentGuess(input.slice(0, -1));
-    } else if (key === "ENTER" && input.length === wordLength) {
+    } else if (key === "enter" && input.length === wordLength) {
       // submit
       const g = guesses;
       g.push(currentGuess);
@@ -120,6 +120,7 @@ function App() {
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
       <Gameboard
         board={board}
+        wordLength={wordLength}
         dailyWord={dailyWord}
         currentGuess={currentGuess}
         currentRow={currentRow}

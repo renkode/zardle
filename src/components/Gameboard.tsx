@@ -5,6 +5,7 @@ import Row from "./Row";
 
 interface BoardProps {
   board: Array<Array<string>>;
+  wordLength: number;
   dailyWord: string;
   currentGuess: string;
   currentRow: number;
@@ -13,12 +14,13 @@ interface BoardProps {
 
 const Gameboard = ({
   board,
+  wordLength,
   dailyWord,
   currentGuess,
   currentRow,
   duplicateLetters,
 }: BoardProps) => {
-  let emptySpaceLength = dailyWord.length - currentGuess.length;
+  let emptySpaceLength = wordLength - currentGuess.length;
   let rowInput = currentGuess
     .split("")
     .concat(Array.from({ length: emptySpaceLength }, (value) => ""));
@@ -38,4 +40,4 @@ const Gameboard = ({
   );
 };
 
-export default Gameboard;
+export default memo(Gameboard);

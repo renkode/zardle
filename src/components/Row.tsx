@@ -5,6 +5,7 @@ import LetterSlot from "./LetterSlot";
 interface RowProps {
   boardRow: Array<string>;
   active: boolean;
+  //currentGuess: string;
   dailyWord: string;
   duplicateLetters: Array<{ symbol: string; indices: Array<number> }>;
 }
@@ -14,40 +15,53 @@ const Row = ({ boardRow, active, dailyWord, duplicateLetters }: RowProps) => {
   return (
     <div className="row">
       {boardRow.map((slot, slotIndex) => {
+        let color = "";
         const letter = slot.toLowerCase();
         let dupe = duplicateLetters.filter((dupe) => dupe.symbol === letter)[0];
-        let color = "";
 
-        if (!active) {
+        if (true) {
           if (dupe) {
+            console.log(dupe);
             // if all duplicate letters are already in the correct place, prevent extra dupes from rendering as yellow
             dupe.indices.forEach((index) => {
               if (boardRow[index] === letter) dupeCount += 1;
             });
 
-            // duplicate letter logic
             if (dupe.symbol === letter && dupe.indices.includes(slotIndex)) {
               color = "green";
             } else if (
               dupe.symbol === letter &&
               !dupe.indices.includes(slotIndex) &&
-              dupeCount < dupe.indices.length
+              dupeCount <= dupe.indices.length
             ) {
               color = "yellow";
               dupeCount += 1;
             }
-          } else if (!dupe) {
-            // single letter logic
+          } else {
             if (dailyWord[slotIndex] === letter) {
               color = "green";
-            } else if (letter.length > 0 && dailyWord.includes(letter)) {
+            } else if (
+              letter.length > 0 &&
+              dailyWord.includes(letter) &&
+              dailyWord[dailyWord.indexOf(letter)] !==
+                boardRow[dailyWord.indexOf(letter)] &&
+              dupeCount < 1
+            ) {
               // empty string counts as being included fsr lol
               color = "yellow";
+              dupeCount += 1;
             }
           }
         }
 
-        return <LetterSlot letter={slot} key={slotIndex} color={color} />;
+        return (
+          <LetterSlot
+            letter={slot.toUpperCase()}
+            key={slotIndex}
+            index={slotIndex}
+            color={color}
+          />
+        );
       })}
     </div>
   );
