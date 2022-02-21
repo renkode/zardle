@@ -6,6 +6,7 @@ import Row from "./Row";
 interface BoardProps {
   board: Array<Array<string>>;
   dailyWord: string;
+  currentGuess: string;
   currentRow: number;
   duplicateLetters: Array<{ symbol: string; indices: Array<number> }>;
 }
@@ -13,15 +14,21 @@ interface BoardProps {
 const Gameboard = ({
   board,
   dailyWord,
+  currentGuess,
   currentRow,
   duplicateLetters,
 }: BoardProps) => {
+  let emptySpaceLength = dailyWord.length - currentGuess.length;
+  let rowInput = currentGuess
+    .split("")
+    .concat(Array.from({ length: emptySpaceLength }, (value) => ""));
+
   return (
     <div className="gameboard">
       {board.map((row, rowIndex) => (
         <Row
           key={rowIndex}
-          boardRow={board[rowIndex]}
+          boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
           active={rowIndex === currentRow ? true : false}
           dailyWord={dailyWord}
           duplicateLetters={duplicateLetters}

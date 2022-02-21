@@ -118,10 +118,10 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
-      {currentGuess}
       <Gameboard
         board={board}
         dailyWord={dailyWord}
+        currentGuess={currentGuess}
         currentRow={currentRow}
         duplicateLetters={duplicateLetters}
       />

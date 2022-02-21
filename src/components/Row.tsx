@@ -18,28 +18,32 @@ const Row = ({ boardRow, active, dailyWord, duplicateLetters }: RowProps) => {
         let dupe = duplicateLetters.filter((dupe) => dupe.symbol === letter)[0];
         let color = "";
 
-        if (dupe) {
-          // if all duplicate letters are already in the correct place, prevent extra dupes from rendering as yellow
-          dupe.indices.forEach((index) => {
-            if (boardRow[index] === letter) dupeCount += 1;
-          });
+        if (!active) {
+          if (dupe) {
+            // if all duplicate letters are already in the correct place, prevent extra dupes from rendering as yellow
+            dupe.indices.forEach((index) => {
+              if (boardRow[index] === letter) dupeCount += 1;
+            });
 
-          if (dupe.symbol === letter && dupe.indices.includes(slotIndex)) {
-            color = "green";
-          } else if (
-            dupe.symbol === letter &&
-            !dupe.indices.includes(slotIndex) &&
-            dupeCount < dupe.indices.length
-          ) {
-            color = "yellow";
-            dupeCount += 1;
-          }
-        } else {
-          if (dailyWord[slotIndex] === letter) {
-            color = "green";
-          } else if (letter.length > 0 && dailyWord.includes(letter)) {
-            // empty string counts as being included fsr lol
-            color = "yellow";
+            // duplicate letter logic
+            if (dupe.symbol === letter && dupe.indices.includes(slotIndex)) {
+              color = "green";
+            } else if (
+              dupe.symbol === letter &&
+              !dupe.indices.includes(slotIndex) &&
+              dupeCount < dupe.indices.length
+            ) {
+              color = "yellow";
+              dupeCount += 1;
+            }
+          } else if (!dupe) {
+            // single letter logic
+            if (dailyWord[slotIndex] === letter) {
+              color = "green";
+            } else if (letter.length > 0 && dailyWord.includes(letter)) {
+              // empty string counts as being included fsr lol
+              color = "yellow";
+            }
           }
         }
 
