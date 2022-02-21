@@ -21,22 +21,20 @@ const Row = ({ boardRow, active, dailyWord, duplicateLetters }: RowProps) => {
 
         if (true) {
           if (dupe) {
-            console.log(dupe);
             // if all duplicate letters are already in the correct place, prevent extra dupes from rendering as yellow
-            dupe.indices.forEach((index) => {
-              if (boardRow[index] === letter) dupeCount += 1;
-            });
-
             if (dupe.symbol === letter && dupe.indices.includes(slotIndex)) {
               color = "green";
             } else if (
               dupe.symbol === letter &&
               !dupe.indices.includes(slotIndex) &&
-              dupeCount <= dupe.indices.length
+              dupeCount < dupe.indices.length
             ) {
               color = "yellow";
-              dupeCount += 1;
             }
+            // no idea why I have to put it here instead of above but ok
+            dupe.indices.forEach((index) => {
+              if (boardRow[index] === letter) dupeCount += 1;
+            });
           } else {
             if (dailyWord[slotIndex] === letter) {
               color = "green";
@@ -45,11 +43,10 @@ const Row = ({ boardRow, active, dailyWord, duplicateLetters }: RowProps) => {
               dailyWord.includes(letter) &&
               dailyWord[dailyWord.indexOf(letter)] !==
                 boardRow[dailyWord.indexOf(letter)] &&
-              dupeCount < 1
+              boardRow.filter((l) => l === letter).length < 2 // god.
             ) {
               // empty string counts as being included fsr lol
               color = "yellow";
-              dupeCount += 1;
             }
           }
         }

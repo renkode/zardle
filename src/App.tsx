@@ -57,7 +57,6 @@ function App() {
     setBoard(newBoard);
     setCurrentRow(currentRow + 1);
     setCurrentGuess("");
-    console.log(newBoard);
   }
 
   function handleKeyDown(e: any) {
