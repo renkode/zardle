@@ -1,53 +1,80 @@
 import "../App.css";
-import React, { useState, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import LetterSlot from "./LetterSlot";
 
 interface RowProps {
   boardRow: Array<string>;
   active: boolean;
-  //currentGuess: string;
   dailyWord: string;
   duplicateLetters: Array<{ symbol: string; indices: Array<number> }>;
 }
 
 const Row = ({ boardRow, active, dailyWord, duplicateLetters }: RowProps) => {
-  let dupeCount = 0;
+  const [yellows, setYellows] = useState<
+    Array<{ symbol: string; index: number }>
+  >([]);
+  const [greens, setGreens] = useState<
+    Array<{ symbol: string; index: number }>
+  >([]);
+
+  function countLetter(word: string, letter: string) {
+    return word.split("").filter((l) => l === letter).length;
+  }
+
+  function validate() {
+    let yellowArr: Array<{ symbol: string; index: number }> = [];
+    let greenArr: Array<{ symbol: string; index: number }> = [];
+
+    boardRow.forEach((l, index) => {
+      const letter = l.toLowerCase();
+
+      if (letter.length === 0) return;
+      if (letter === dailyWord[index]) {
+        greenArr.push({ symbol: letter, index: index });
+      } else if (dailyWord.includes(letter)) {
+        // skip if already in array
+        if (yellowArr.some((y) => y.symbol === letter && y.index === index))
+          return;
+        // yellows should not exceed max occurrences of a letter
+        if (
+          yellowArr.filter((l) => l.symbol === letter).length +
+            greenArr.filter((l) => l.symbol === letter).length >=
+          countLetter(dailyWord, letter)
+        )
+          return;
+        yellowArr.push({ symbol: letter, index: index });
+      }
+
+      // remove previous yellows if greens are found later in input
+      // e.g. for "APPLE", the first P in "PPPXX" will flip back to gray after 3rd input
+      if (
+        greenArr.filter((l) => l.symbol === letter).length ===
+        countLetter(dailyWord, letter)
+      )
+        yellowArr = yellowArr.filter((l) => l.symbol !== letter);
+    });
+    setYellows(yellowArr);
+    setGreens(greenArr);
+  }
+
+  useEffect(() => {
+    validate();
+  }, [boardRow]);
+
   return (
     <div className="row">
       {boardRow.map((slot, slotIndex) => {
         let color = "";
         const letter = slot.toLowerCase();
-        let dupe = duplicateLetters.filter((dupe) => dupe.symbol === letter)[0];
 
-        if (true) {
-          if (dupe) {
-            // if all duplicate letters are already in the correct place, prevent extra dupes from rendering as yellow
-            if (dupe.symbol === letter && dupe.indices.includes(slotIndex)) {
-              color = "green";
-            } else if (
-              dupe.symbol === letter &&
-              !dupe.indices.includes(slotIndex) &&
-              dupeCount < dupe.indices.length
-            ) {
-              color = "yellow";
-            }
-            // no idea why I have to put it here instead of above but ok
-            dupe.indices.forEach((index) => {
-              if (boardRow[index] === letter) dupeCount += 1;
-            });
-          } else {
-            if (dailyWord[slotIndex] === letter) {
-              color = "green";
-            } else if (
-              letter.length > 0 &&
-              dailyWord.includes(letter) &&
-              dailyWord[dailyWord.indexOf(letter)] !==
-                boardRow[dailyWord.indexOf(letter)] &&
-              boardRow.filter((l) => l === letter).length < 2 // god.
-            ) {
-              // empty string counts as being included fsr lol
-              color = "yellow";
-            }
+        if (true /*!active*/) {
+          if (letter === dailyWord[slotIndex]) {
+            color = "green";
+          } else if (
+            letter.length > 0 &&
+            yellows.some((y) => y.symbol === letter && y.index === slotIndex)
+          ) {
+            color = "yellow";
           }
         }
 
