@@ -2,21 +2,31 @@ import "./App.css";
 import React, { useState, useEffect } from "react";
 import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
-import { IncomingMessage } from "http";
+import WORDS from "./words.json";
+
+// if word only has one instance of a letter, make sure that other copies of the letter dont turn yellow
+// im thinking we should turn board into an array of objects with letter+color so that we can pass down the color to keyboard
 
 function App() {
   const [wordLength, setWordLength] = useState(5);
+  const [dailyWord, setDailyWord] = useState("apple");
   const [maxGuesses, setMaxGuesses] = useState(6);
+
   const [board, setBoard] = useState(
     createDefaultBoard(wordLength, maxGuesses)
   );
-  const [guesses, setGuesses] = useState<Array<string>>([]);
-  const [currentRow, setCurrentRow] = useState(0);
-  const [currentGuess, setCurrentGuess] = useState("");
-  const [streak, setStreak] = useState(0);
-  const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up red if true
+  const [currentRow, setCurrentRow] = useState(0); // input row
+
+  const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
+  const [currentGuess, setCurrentGuess] = useState(""); // current input
+  const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up current row as red if true
+  const [enableValidation, setEnableValidation] = useState(true);
+  const [yellowLetters, setYellowLetters] = useState([]);
+  const [greenLetters, setGreenLetters] = useState([]);
+
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [dailyWord, setDailyWord] = useState("penis");
+
+  const [streak, setStreak] = useState(0);
   const [playedToday, setPlayedToday] = useState(false);
 
   function createDefaultBoard(
@@ -30,6 +40,7 @@ function App() {
       arr.push(rowOfEmptyStrings);
     }
     return arr;
+    // gameboard: [ ["",...,""],["",...,""],["",...,""] ]
   }
 
   function handleSubmit() {
@@ -67,9 +78,15 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
-      <Gameboard board={board} />
       {currentGuess}
-      <Keyboard />
+      <Gameboard
+        board={board}
+        dailyWord={dailyWord}
+        currentRow={currentRow}
+        yellowLetters={yellowLetters}
+        greenLetters={greenLetters}
+      />
+      <Keyboard board={board} />
     </div>
   );
 }

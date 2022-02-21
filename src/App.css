@@ -9,6 +9,16 @@
   font-size: 48px;
 }
 
+.yellow {
+  border: 2px solid rgb(255, 216, 43);
+  color: rgb(255, 216, 43);
+}
+
+.green {
+  border: 2px solid rgb(143, 201, 67);
+  color: rgb(143, 201, 67);
+}
+
 .row {
   display: flex;
   flex-direction: row;

@@ -1,8 +1,14 @@
 import "../App.css";
-import React, { useState, memo } from "react";
+import React, { useState } from "react";
 import KeySlot from "./KeySlot";
 
-const Keyboard = () => {
+//check if a-z key is included in board
+
+interface KeyboardProps {
+  board: Array<Array<string>>;
+}
+
+const Keyboard = ({ board }: KeyboardProps) => {
   const symbols = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
@@ -29,4 +35,4 @@ const Keyboard = () => {
   );
 };
 
-export default memo(Keyboard);
+export default Keyboard;

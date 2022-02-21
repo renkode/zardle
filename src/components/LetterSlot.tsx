@@ -1,13 +1,13 @@
 import "../App.css";
 import React, { memo } from "react";
-// lol don't memo this
 
 interface LetterSlotProps {
   letter: string;
+  color: string;
 }
 
-const LetterSlot = ({ letter }: LetterSlotProps) => {
-  return <div className="gameboard-slot">{letter}</div>;
+const LetterSlot = ({ letter, color }: LetterSlotProps) => {
+  return <div className={`gameboard-slot ${color}`}>{letter}</div>;
 };
 
-export default LetterSlot;
+export default memo(LetterSlot);

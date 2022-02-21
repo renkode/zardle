@@ -1,23 +1,37 @@
 import "../App.css";
-import React, { memo } from "react";
-import LetterSlot from "./LetterSlot";
+import React, { memo, useState } from "react";
+import Row from "./Row";
+// don't memo this or else it won't render state change
 
 interface BoardProps {
   board: Array<Array<string>>;
+  dailyWord: string;
+  currentRow: number;
+  yellowLetters: Array<string>;
+  greenLetters: Array<string>;
 }
 
-const Gameboard = ({ board }: BoardProps) => {
+const Gameboard = ({
+  board,
+  dailyWord,
+  currentRow,
+  yellowLetters,
+  greenLetters,
+}: BoardProps) => {
   return (
     <div className="gameboard">
       {board.map((row, rowIndex) => (
-        <div className="row" key={rowIndex}>
-          {board[rowIndex].map((slot, slotIndex) => (
-            <LetterSlot letter={slot} key={slotIndex} />
-          ))}
-        </div>
+        <Row
+          key={rowIndex}
+          boardRow={board[rowIndex]}
+          active={rowIndex === currentRow ? true : false}
+          dailyWord={dailyWord}
+          yellowLetters={yellowLetters}
+          greenLetters={greenLetters}
+        />
       ))}
     </div>
   );
 };
 
-export default memo(Gameboard);
+export default Gameboard;
