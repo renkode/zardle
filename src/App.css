@@ -11,22 +11,14 @@
 .gameboard-slot {
   width: 80px;
   height: 80px;
+  margin: 4px;
   border: 2px solid gray;
   border-radius: 10%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 48px;
-}
-
-.yellow {
-  border: 2px solid rgb(255, 216, 43);
-  color: rgb(255, 216, 43);
-}
-
-.green {
-  border: 2px solid rgb(143, 201, 67);
-  color: rgb(143, 201, 67);
+  box-sizing: border-box;
 }
 
 .row {
@@ -43,8 +35,27 @@
   justify-content: center;
   align-items: center;
   transition-duration: 0.1s;
+  font-size: 20px;
 }
 
 .keyboard-key:hover {
   background: rgb(196, 196, 196);
+}
+
+.green {
+  border: 2px solid rgb(143, 201, 67);
+  background: rgb(143, 201, 67);
+  color: white;
+}
+
+.yellow {
+  border: 2px solid rgb(255, 216, 43);
+  background: rgb(255, 216, 43);
+  color: white;
+}
+
+.gray {
+  border: 2px solid rgb(163, 163, 163);
+  background: rgb(163, 163, 163);
+  color: white;
 }

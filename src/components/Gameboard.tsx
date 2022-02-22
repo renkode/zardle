@@ -9,7 +9,6 @@ interface BoardProps {
   dailyWord: string;
   currentGuess: string;
   currentRow: number;
-  duplicateLetters: Array<{ symbol: string; indices: Array<number> }>;
 }
 
 const Gameboard = ({
@@ -18,7 +17,6 @@ const Gameboard = ({
   dailyWord,
   currentGuess,
   currentRow,
-  duplicateLetters,
 }: BoardProps) => {
   let emptySpaceLength = wordLength - currentGuess.length;
   let rowInput = currentGuess
@@ -33,7 +31,6 @@ const Gameboard = ({
           boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
           active={rowIndex === currentRow ? true : false}
           dailyWord={dailyWord}
-          duplicateLetters={duplicateLetters}
         />
       ))}
     </div>

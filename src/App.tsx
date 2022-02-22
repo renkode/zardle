@@ -13,9 +13,6 @@ function App() {
   const [wordLength, setWordLength] = useState(5);
   const [maxGuesses, setMaxGuesses] = useState(6);
   const [dailyWord, setDailyWord] = useState("");
-  const [duplicateLetters, setDuplicateLetters] = useState<
-    Array<{ symbol: string; indices: Array<number> }>
-  >([]);
 
   const [board, setBoard] = useState(
     createDefaultBoard(wordLength, maxGuesses)
@@ -26,6 +23,7 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState(""); // current input
   const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up current row as red if true
   const [enableValidation, setEnableValidation] = useState(true);
+  const [enableInput, setEnableInput] = useState(true);
   const [yellowLetters, setYellowLetters] = useState([]);
   const [greenLetters, setGreenLetters] = useState([]);
 
@@ -59,9 +57,9 @@ function App() {
     setCurrentGuess("");
   }
 
-  function handleKeyDown(e: any) {
-    if (playedToday) return;
-    const key = e.key.toLowerCase();
+  function handleKeyDown(e: any, symbol: string = "") {
+    if (playedToday || !enableInput) return;
+    const key = symbol.toLowerCase() || e.key.toLowerCase(); //in-app keyboard or actual keyboard
     const regex = /^[a-z]a{0,1}$/;
     const input = currentGuess.toLowerCase();
     // check if key pressed is a-z/A-Z/backspace/delete
@@ -80,35 +78,9 @@ function App() {
     }
   }
 
-  // goal is to grab duplicate letters and their respective indices
-  // so that i can evaluate whether a slot on the board is yellow or green
-  function getDuplicateLetters(word: string) {
-    const wordArr = word.split("");
-    let dupes: string[] = [];
-
-    wordArr.forEach((char) => {
-      if (dupes.includes(char)) return;
-      let indices: number[] = [];
-      let count = wordArr.filter((letter) => letter === char).length;
-
-      if (count > 1) {
-        dupes.push(char);
-        // get indices of all recurring letters
-        wordArr.forEach((letter, index) => {
-          if (letter === char) indices.push(index);
-        });
-        setDuplicateLetters([
-          ...duplicateLetters,
-          { symbol: char, indices: indices },
-        ]);
-      }
-    });
-  }
-
   async function fetchDailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 500));
     setDailyWord("apple");
-    getDuplicateLetters("apple");
   }
 
   useEffect(() => {
@@ -123,9 +95,12 @@ function App() {
         dailyWord={dailyWord}
         currentGuess={currentGuess}
         currentRow={currentRow}
-        duplicateLetters={duplicateLetters}
       />
-      <Keyboard board={board} />
+      <Keyboard
+        handleKeyDown={handleKeyDown}
+        dailyWord={dailyWord}
+        lastGuess={guesses[guesses.length - 1]}
+      />
     </div>
   );
 }
