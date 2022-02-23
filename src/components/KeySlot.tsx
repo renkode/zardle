@@ -1,5 +1,5 @@
 import "../App.css";
-import React, { memo } from "react";
+import { memo } from "react";
 
 interface KeySlotProps {
   symbol: string;

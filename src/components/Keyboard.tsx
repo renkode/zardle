@@ -1,16 +1,17 @@
 import "../App.css";
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import KeySlot from "./KeySlot";
 
 //check if a-z key is included in board
 
 interface KeyboardProps {
   dailyWord: string;
-  lastGuess: string;
+  guesses: Array<string>;
   handleKeyDown: Function;
 }
 
-const Keyboard = ({ dailyWord, lastGuess, handleKeyDown }: KeyboardProps) => {
+const Keyboard = ({ dailyWord, guesses, handleKeyDown }: KeyboardProps) => {
+  const lastGuess = guesses[guesses.length - 1];
   const [greens, setGreens] = useState<Array<string>>([]);
   const [yellows, setYellows] = useState<Array<string>>([]);
   const [grays, setGrays] = useState<Array<string>>([]);
@@ -50,12 +51,24 @@ const Keyboard = ({ dailyWord, lastGuess, handleKeyDown }: KeyboardProps) => {
     return grayArr;
   };
 
+  const reset = () => {
+    setGrays([]);
+    setYellows([]);
+    setGreens([]);
+  };
+
   useEffect(() => {
-    if (!lastGuess) return;
-    setGreens(getGreens());
-    setYellows(getYellows());
-    setGrays(getGrays());
-  }, [lastGuess]);
+    if (guesses.length === 0) {
+      reset();
+    } else {
+      if (!lastGuess) return;
+      setTimeout(() => {
+        setGreens(getGreens());
+        setYellows(getYellows());
+        setGrays(getGrays());
+      }, dailyWord.length * 250);
+    }
+  });
 
   return (
     <div className="keyboard">

@@ -6,12 +6,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 
-.gameboard-slot {
+.tile {
   width: 80px;
   height: 80px;
-  margin: 4px;
+  margin: 0px 4px 8px 4px;
   border: 2px solid gray;
   border-radius: 10%;
   display: flex;
@@ -21,14 +22,41 @@
   box-sizing: border-box;
 }
 
+.transform {
+  animation: transform 0.1s ease-in;
+}
+
+@keyframes transform {
+  0% {
+    transform: scale(95%, 95%);
+  }
+  60% {
+    transform: scale(105%, 105%);
+  }
+  100% {
+    transform: scale(100%, 100%);
+  }
+}
+
 .row {
   display: flex;
   flex-direction: row;
+  justify-items: center;
+  align-items: center;
+}
+
+.keyboard {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .keyboard-key {
   width: 50px;
   height: 80px;
+  margin: 2px;
   border: 2px solid gray;
   border-radius: 10%;
   display: flex;
@@ -43,14 +71,14 @@
 }
 
 .green {
-  border: 2px solid rgb(143, 201, 67);
-  background: rgb(143, 201, 67);
+  border: 2px solid rgb(128, 187, 52);
+  background: rgb(128, 187, 52);
   color: white;
 }
 
 .yellow {
-  border: 2px solid rgb(255, 216, 43);
-  background: rgb(255, 216, 43);
+  border: 2px solid rgb(221, 185, 23);
+  background: rgb(221, 185, 23);
   color: white;
 }
 
@@ -58,4 +86,19 @@
   border: 2px solid rgb(163, 163, 163);
   background: rgb(163, 163, 163);
   color: white;
+}
+
+.keyboard-key.green:hover {
+  background: rgb(87, 175, 47);
+  border: 2px solid rgb(87, 175, 47);
+}
+
+.keyboard-key.yellow:hover {
+  background: rgb(209, 158, 17);
+  border: 2px solid rgb(209, 158, 17);
+}
+
+.keyboard-key.gray:hover {
+  background: rgb(148, 148, 148);
+  border: 2px solid rgb(148, 148, 148);
 }

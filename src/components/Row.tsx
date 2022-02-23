@@ -1,27 +1,37 @@
 import "../App.css";
-import React, { useState, useEffect, memo } from "react";
-import LetterSlot from "./LetterSlot";
+import { useState, useEffect, useRef, memo } from "react";
+import Tile from "./Tile";
+import ReactCardFlip from "react-card-flip";
 
 interface RowProps {
   boardRow: Array<string>;
   active: boolean;
   dailyWord: string;
+  backspacing: boolean;
+  wordLength: number;
 }
 
-const Row = ({ boardRow, active, dailyWord }: RowProps) => {
-  const [grays, setGrays] = useState<Array<string>>([]);
+const Row = ({
+  boardRow,
+  active,
+  dailyWord,
+  backspacing,
+  wordLength,
+}: RowProps) => {
   const [yellows, setYellows] = useState<
     Array<{ symbol: string; index: number }>
   >([]);
   const [greens, setGreens] = useState<
     Array<{ symbol: string; index: number }>
   >([]);
+  const [flip, setFlip] = useState<Array<boolean>>([]);
+  const [count, setCount] = useState(0);
+
   function countLetter(word: string, letter: string) {
     return word.split("").filter((l) => l === letter).length;
   }
 
   function validate() {
-    let grayArr: Array<string> = [];
     let yellowArr: Array<{ symbol: string; index: number }> = [];
     let greenArr: Array<{ symbol: string; index: number }> = [];
 
@@ -45,9 +55,6 @@ const Row = ({ boardRow, active, dailyWord }: RowProps) => {
           return;
 
         yellowArr.push({ symbol: letter, index: index });
-      } else {
-        if (grayArr.some((g) => g === letter)) return;
-        grayArr.push(letter);
       }
 
       // remove previous yellows if all greens are found later in input
@@ -58,14 +65,38 @@ const Row = ({ boardRow, active, dailyWord }: RowProps) => {
       )
         yellowArr = yellowArr.filter((l) => l.symbol !== letter);
     });
-    setGrays(grayArr);
     setYellows(yellowArr);
     setGreens(greenArr);
   }
 
+  function flipSlot(index: number) {
+    let arr = flip;
+    arr[index] = true;
+    setFlip(arr);
+  }
+
   useEffect(() => {
+    if (boardRow.every((l) => l === "")) {
+      setCount(0);
+      setFlip([]);
+      return;
+    }
     validate();
   }, [boardRow]);
+
+  useEffect(() => {
+    if (
+      !active &&
+      boardRow.filter((l) => l.length > 0).length >= wordLength &&
+      count < boardRow.length
+    ) {
+      const timer = setTimeout(() => {
+        flipSlot(count);
+        setCount(count + 1);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  });
 
   return (
     <div className="row">
@@ -81,18 +112,28 @@ const Row = ({ boardRow, active, dailyWord }: RowProps) => {
             yellows.some((y) => y.symbol === letter && y.index === slotIndex)
           ) {
             color = "yellow";
-          } else if (letter.length > 0 && grays.some((g) => g === letter)) {
+          } else if (letter.length > 0) {
             color = "gray";
           }
         }
 
         return (
-          <LetterSlot
-            letter={slot.toUpperCase()}
+          <ReactCardFlip
+            isFlipped={flip[slotIndex]}
+            flipDirection="vertical"
             key={slotIndex}
-            index={slotIndex}
-            color={color}
-          />
+            containerClassName={`${
+              !flip[slotIndex] &&
+              active &&
+              !backspacing &&
+              slotIndex === boardRow.filter((l) => l.length > 0).length - 1
+                ? "transform"
+                : ""
+            }`}
+          >
+            <Tile letter={slot.toUpperCase()} color="" transform="" />
+            <Tile letter={slot.toUpperCase()} color={color} transform="" />
+          </ReactCardFlip>
         );
       })}
     </div>
