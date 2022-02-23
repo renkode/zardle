@@ -5,48 +5,44 @@ import KeySlot from "./KeySlot";
 //check if a-z key is included in board
 
 interface KeyboardProps {
-  dailyWord: string;
+  lastRow: Array<{ symbol: string; color: string }>;
   guesses: Array<string>;
   handleKeyDown: Function;
 }
 
-const Keyboard = ({ dailyWord, guesses, handleKeyDown }: KeyboardProps) => {
-  const lastGuess = guesses[guesses.length - 1];
-  const [greens, setGreens] = useState<Array<string>>([]);
-  const [yellows, setYellows] = useState<Array<string>>([]);
-  const [grays, setGrays] = useState<Array<string>>([]);
+const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
   const symbols = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
     ["enter", "Z", "X", "C", "V", "B", "N", "M", "backspace"],
   ];
+  const [greens, setGreens] = useState<Array<string>>([]);
+  const [yellows, setYellows] = useState<Array<string>>([]);
+  const [grays, setGrays] = useState<Array<string>>([]);
 
   const getGreens = () => {
     let greenArr = greens;
-    const guessArr = lastGuess.split("");
-    guessArr.forEach((letter, index) => {
-      if (greens.includes(letter)) return;
-      if (dailyWord[index] === letter) greenArr.push(letter);
+    lastRow.forEach((tile) => {
+      if (greens.includes(tile.symbol)) return;
+      if (tile.color === "green") greenArr.push(tile.symbol);
     });
     return greenArr;
   };
 
   const getYellows = () => {
     let yellowArr = yellows;
-    const guessArr = lastGuess.split("");
-    guessArr.forEach((letter) => {
-      if (yellows.includes(letter)) return;
-      if (dailyWord.includes(letter)) yellowArr.push(letter);
+    lastRow.forEach((tile) => {
+      if (yellows.includes(tile.symbol)) return;
+      if (tile.color === "yellow") yellowArr.push(tile.symbol);
     });
     return yellowArr.filter((y) => !greens.includes(y));
   };
 
   const getGrays = () => {
     let grayArr = grays;
-    const guessArr = lastGuess.split("");
-    guessArr.forEach((letter) => {
-      if (grays.includes(letter)) return;
-      if (!dailyWord.includes(letter)) grayArr.push(letter);
+    lastRow.forEach((tile) => {
+      if (grays.includes(tile.symbol)) return;
+      if (tile.color === "gray") grayArr.push(tile.symbol);
     });
     return grayArr;
   };
@@ -58,15 +54,18 @@ const Keyboard = ({ dailyWord, guesses, handleKeyDown }: KeyboardProps) => {
   };
 
   useEffect(() => {
-    if (guesses.length === 0) {
+    if (
+      guesses.length === 0 &&
+      (greens.length > 0 || yellows.length > 0 || grays.length > 0)
+    ) {
       reset();
     } else {
-      if (!lastGuess) return;
+      if (!lastRow) return;
       setTimeout(() => {
+        setGrays(getGrays());
         setGreens(getGreens());
         setYellows(getYellows());
-        setGrays(getGrays());
-      }, dailyWord.length * 250);
+      }, lastRow.length * 250);
     }
   });
 
