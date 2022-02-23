@@ -1,5 +1,5 @@
 import "../App.css";
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import Tile from "./Tile";
 import ReactCardFlip from "react-card-flip";
 
@@ -7,10 +7,10 @@ interface RowProps {
   boardRow: Array<{ symbol: string; color: string }>;
   active: boolean;
   backspacing: boolean;
-  wordLength: number;
+  setAnimationDone: Function;
 }
 
-const Row = ({ boardRow, active, backspacing, wordLength }: RowProps) => {
+const Row = ({ boardRow, active, backspacing, setAnimationDone }: RowProps) => {
   const [flip, setFlip] = useState<Array<boolean>>([]);
   const [count, setCount] = useState(0);
 
@@ -31,11 +31,13 @@ const Row = ({ boardRow, active, backspacing, wordLength }: RowProps) => {
   useEffect(() => {
     if (
       !active &&
-      boardRow.filter((tile) => tile.symbol.length > 0).length >= wordLength &&
+      boardRow.filter((tile) => tile.symbol.length > 0).length >=
+        boardRow.length &&
       count < boardRow.length
     ) {
       const timer = setTimeout(() => {
         flipSlot(count);
+        setAnimationDone(true);
         setCount(count + 1);
       }, 200);
       return () => clearTimeout(timer);
