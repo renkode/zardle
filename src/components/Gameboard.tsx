@@ -4,26 +4,32 @@ import Row from "./Row";
 // don't memo this or else it won't render state change
 
 interface BoardProps {
-  board: Array<Array<string>>;
+  board: Array<Array<{ symbol: string; color: string }>>;
   wordLength: number;
-  dailyWord: string;
   currentGuess: string;
   currentRow: number;
   backspacing: boolean;
+  setAnimationDone: Function;
 }
 
 const Gameboard = ({
   board,
   wordLength,
-  dailyWord,
   currentGuess,
   currentRow,
   backspacing,
+  setAnimationDone,
 }: BoardProps) => {
   let emptySpaceLength = wordLength - currentGuess.length;
-  let rowInput = currentGuess
-    .split("")
-    .concat(Array.from({ length: emptySpaceLength }, (value) => ""));
+  let rowInput = Array.from(
+    { length: currentGuess.length },
+    (v, i) => (v = { symbol: currentGuess[i], color: "" })
+  ).concat(
+    Array.from(
+      { length: emptySpaceLength },
+      (v) => (v = { symbol: "", color: "" })
+    )
+  );
 
   return (
     <div className="gameboard">
@@ -32,9 +38,8 @@ const Gameboard = ({
           key={rowIndex}
           boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
           active={rowIndex === currentRow ? true : false}
-          dailyWord={dailyWord}
           backspacing={backspacing}
-          wordLength={wordLength}
+          setAnimationDone={setAnimationDone}
         />
       ))}
     </div>
