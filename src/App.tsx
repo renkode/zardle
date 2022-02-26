@@ -6,10 +6,19 @@ import Keyboard from "./components/Keyboard";
 import WORDS from "./words.json";
 
 function App() {
+  const WIN_MESSAGE = [
+    "Genius",
+    "Magnificent",
+    "Impressive",
+    "Splendid",
+    "Great",
+    "Phew",
+  ];
   const [wordLength, setWordLength] = useState(5);
   const [maxGuesses, setMaxGuesses] = useState(6);
   const [dailyWord, setDailyWord] = useState("");
   const [zardleDay, setZardleDay] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
 
   const [board, setBoard] = useState(
     createDefaultBoard(wordLength, maxGuesses)
@@ -32,7 +41,7 @@ function App() {
 
   async function fetchDailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setDailyWord("among");
+    setDailyWord("apple");
     setZardleDay(69);
   }
 
@@ -42,9 +51,12 @@ function App() {
 
   function copyResultsClipboard() {
     if (!playedToday) return;
-    const attempts = won ? guesses.length.toString() : "X";
     let squares = "";
-    board.forEach((row) => {
+    const attempts = won ? guesses.length.toString() : "X";
+    const coloredBoard = board.filter((row) =>
+      row.some((tile) => tile.color !== "")
+    );
+    coloredBoard.forEach((row, rowIndex) => {
       let rowSquares = "";
       row.forEach((tile) => {
         let square = "";
@@ -61,7 +73,8 @@ function App() {
         }
         rowSquares = rowSquares.concat(square);
       });
-      rowSquares = rowSquares.concat("\n");
+      if (rowIndex !== coloredBoard.length - 1)
+        rowSquares = rowSquares.concat("\n"); // don't add newline at the last row
       squares = squares.concat(rowSquares);
     });
     let text = `Zardle ${zardleDay} ${attempts}/${maxGuesses}\n\n${squares}`;
@@ -89,9 +102,11 @@ function App() {
     setCurrentGuess("");
     setGuesses([]);
     setAnimationDone(false);
+    setStreak(0);
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
+    localStorage.clear();
   }
 
   function handleKeyDown(e: any, symbol: string = "") {
@@ -112,6 +127,30 @@ function App() {
       // submit
       handleSubmit();
     }
+  }
+
+  function saveGame() {
+    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem("guesses", JSON.stringify(guesses));
+    localStorage.setItem("streak", JSON.stringify(streak));
+    localStorage.setItem("playedToday", JSON.stringify(playedToday));
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }
+
+  function loadGame() {
+    let data: { [key: string]: any } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
+    }
+    if (Object.keys(data).length === 0) return;
+    setBoard(data.board);
+    setGuesses(data.guesses);
+    setStreak(data.streak);
+    setPlayedToday(data.playedToday);
+    setDarkMode(data.darkMode);
+    if (data.playedToday) setEnableInput(false);
+    setCurrentRow(data.guesses.length);
   }
 
   function didGameEnd() {
@@ -139,7 +178,7 @@ function App() {
   }
 
   function handleSubmit() {
-    if (isCurrentGuessInvalid || !enableInput) return;
+    if (isCurrentGuessInvalid || playedToday || !enableInput) return;
     const g = guesses;
     g.push(currentGuess);
     setGuesses(g);
@@ -152,7 +191,6 @@ function App() {
     }));
     newBoard[currentRow] = newRow;
     setBoard(newBoard);
-
     setCurrentRowColors();
     setCurrentRow(currentRow + 1);
     setCurrentGuess("");
@@ -165,16 +203,15 @@ function App() {
     let greenArr: Array<{ symbol: string; index: number }> = [];
 
     newBoard[currentRow].forEach((tile, index) => {
-      const letter = tile.symbol.toLowerCase();
+      const letter = tile.symbol;
       if (letter.length === 0) return;
-
+      // assign letters to colored array
       if (letter === dailyWord[index]) {
         greenArr.push({ symbol: letter, index: index });
       } else if (dailyWord.includes(letter)) {
         // skip if already in array
         if (yellowArr.some((y) => y.symbol === letter && y.index === index))
           return;
-
         // yellows should not exceed max occurrences of a letter
         if (
           yellowArr.filter((y) => y.symbol === letter).length +
@@ -184,7 +221,6 @@ function App() {
           return;
         yellowArr.push({ symbol: letter, index: index });
       }
-
       // remove previous yellows if all greens are found later in input
       // e.g. for "APPLE", the first P in "PPP__" will flip back to gray after 3rd input
       if (
@@ -194,7 +230,7 @@ function App() {
         yellowArr = yellowArr.filter((y) => y.symbol !== letter);
     });
 
-    // change colors
+    // actually change colors
     newBoard[currentRow].forEach((tile, index) => {
       if (yellowArr.some((y) => y.index === index)) {
         tile.color = "yellow";
@@ -209,7 +245,13 @@ function App() {
 
   useEffect(() => {
     fetchDailyWord();
+    loadGame();
   }, []);
+
+  useEffect(() => {
+    // async my detested
+    saveGame();
+  }, [board, guesses, streak, playedToday, darkMode]);
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>

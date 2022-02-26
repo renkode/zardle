@@ -1,6 +1,6 @@
 import "../App.css";
 import { useState, useEffect, memo } from "react";
-import KeySlot from "./KeySlot";
+import KeyButton from "./KeyButton";
 
 //check if a-z key is included in board
 
@@ -11,10 +11,10 @@ interface KeyboardProps {
 }
 
 const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
-  const symbols = [
-    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-    ["enter", "Z", "X", "C", "V", "B", "N", "M", "backspace"],
+  const SYMBOLS = [
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
   ];
   const [greens, setGreens] = useState<Array<string>>([]);
   const [yellows, setYellows] = useState<Array<string>>([]);
@@ -72,8 +72,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
   return (
     <div className="keyboard">
       <div className="row">
-        {symbols[0].map((symbol, index) => {
-          symbol = symbol.toLowerCase();
+        {SYMBOLS[0].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
             color = "green";
@@ -84,7 +83,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
           }
 
           return (
-            <KeySlot
+            <KeyButton
               symbol={symbol}
               color={color}
               key={index}
@@ -94,8 +93,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
         })}
       </div>
       <div className="row">
-        {symbols[1].map((symbol, index) => {
-          symbol = symbol.toLowerCase();
+        {SYMBOLS[1].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
             color = "green";
@@ -106,7 +104,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
           }
 
           return (
-            <KeySlot
+            <KeyButton
               symbol={symbol}
               color={color}
               key={index}
@@ -116,8 +114,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
         })}
       </div>
       <div className="row">
-        {symbols[2].map((symbol, index) => {
-          symbol = symbol.toLowerCase();
+        {SYMBOLS[2].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
             color = "green";
@@ -128,7 +125,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
           }
 
           return (
-            <KeySlot
+            <KeyButton
               symbol={symbol}
               color={color}
               key={index}

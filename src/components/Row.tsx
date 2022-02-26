@@ -63,11 +63,7 @@ const Row = ({ boardRow, active, backspacing, setAnimationDone }: RowProps) => {
             }`}
           >
             <Tile letter={slot.symbol.toUpperCase()} color="" transform="" />
-            <Tile
-              letter={slot.symbol.toUpperCase()}
-              color={slot.color}
-              transform=""
-            />
+            <Tile letter={slot.symbol.toUpperCase()} color={slot.color} />
           </ReactCardFlip>
         );
       })}

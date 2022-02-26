@@ -53,7 +53,7 @@
   align-items: center;
 }
 
-.keyboard-key {
+.key {
   width: 50px;
   height: 80px;
   margin: 2px;
@@ -64,9 +64,10 @@
   align-items: center;
   transition-duration: 0.1s;
   font-size: 20px;
+  cursor: pointer;
 }
 
-.keyboard-key:hover {
+.key:hover {
   background: rgb(196, 196, 196);
 }
 
@@ -88,17 +89,17 @@
   color: white;
 }
 
-.keyboard-key.green:hover {
+.key.green:hover {
   background: rgb(87, 175, 47);
   border: 2px solid rgb(87, 175, 47);
 }
 
-.keyboard-key.yellow:hover {
+.key.yellow:hover {
   background: rgb(209, 158, 17);
   border: 2px solid rgb(209, 158, 17);
 }
 
-.keyboard-key.gray:hover {
+.key.gray:hover {
   background: rgb(148, 148, 148);
   border: 2px solid rgb(148, 148, 148);
 }
