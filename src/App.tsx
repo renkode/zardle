@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Modal from "react-modal";
 import Gameboard from "./components/Gameboard";
@@ -17,6 +17,7 @@ function App() {
     "Great",
     "Phew",
   ];
+  const firstRender = useRef(false);
   const [wordLength, setWordLength] = useState(5);
   const [maxGuesses, setMaxGuesses] = useState(6);
   const [dailyWord, setDailyWord] = useState("");
@@ -48,9 +49,9 @@ function App() {
   const [backspacing, setBackspacing] = useState(false);
 
   async function fetchDailyWord() {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    setZardleDay(72);
     setDailyWord("react");
-    setZardleDay(69);
   }
 
   function countLetter(word: string, letter: string) {
@@ -165,18 +166,12 @@ function App() {
       if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
     }
     if (Object.keys(data).length === 0) return;
-    if (zardleDay === data.zardleDay) {
-      // resume play
-      setBoard(data.board);
-      setGuesses(data.guesses);
-      setPlayedToday(data.playedToday);
-      setWon(didGameEnd());
-      setCurrentRow(data.guesses.length);
-      if (data.playedToday) setEnableInput(false);
-    } else {
-      // start with fresh board
-      setZardleDay(zardleDay);
-    }
+    setBoard(data.board);
+    setGuesses(data.guesses);
+    setPlayedToday(data.playedToday);
+    setWon(didGameEnd());
+    setCurrentRow(data.guesses.length);
+    if (data.playedToday) setEnableInput(false);
     setTotalGames(data.totalGames);
     setLosses(data.losses);
     setStreak(data.streak);
@@ -301,22 +296,24 @@ function App() {
   }, []);
 
   useEffect(() => {
-    loadGame();
-  }, [dailyWord]); // didGameEnd won't work otherwise
+    if (!firstRender.current) return;
+    const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
+    if (zardleDay !== day) {
+      localStorage.setItem("zardleDay", JSON.stringify(zardleDay));
+      resetBoard();
+      saveGame();
+    } else {
+      loadGame();
+    }
+  }, [zardleDay]);
 
   useEffect(() => {
     if (streak > highestStreak) setHighestStreak(streak);
   }, [streak]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      //setShowWinMessage(true);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [winMessage]);
-
-  useEffect(() => {
-    saveGame();
+    if (firstRender.current) saveGame(); // DO NOT RUN ON MOUNT
+    firstRender.current = true;
   }, [
     board,
     guesses,
