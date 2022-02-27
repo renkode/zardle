@@ -47,22 +47,22 @@ const Row = ({ boardRow, active, backspacing, setAnimationDone }: RowProps) => {
   return (
     <div className="row">
       {boardRow.map((slot, slotIndex) => {
+        let transformAni = `${
+          !flip[slotIndex] &&
+          active &&
+          !backspacing &&
+          slotIndex === boardRow.filter((l) => l.symbol.length > 0).length - 1
+            ? "transform"
+            : ""
+        }`;
         return (
           <ReactCardFlip
             isFlipped={flip[slotIndex]}
             flipDirection="vertical"
             key={slotIndex}
-            containerClassName={`${
-              !flip[slotIndex] &&
-              active &&
-              !backspacing &&
-              slotIndex ===
-                boardRow.filter((l) => l.symbol.length > 0).length - 1
-                ? "transform"
-                : ""
-            }`}
+            containerClassName={transformAni}
           >
-            <Tile letter={slot.symbol.toUpperCase()} color="" transform="" />
+            <Tile letter={slot.symbol.toUpperCase()} />
             <Tile letter={slot.symbol.toUpperCase()} color={slot.color} />
           </ReactCardFlip>
         );

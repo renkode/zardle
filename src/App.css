@@ -7,6 +7,7 @@
   justify-content: center;
   align-items: center;
   user-select: none;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .tile {
@@ -102,4 +103,38 @@
 .key.gray:hover {
   background: rgb(148, 148, 148);
   border: 2px solid rgb(148, 148, 148);
+}
+
+h3 {
+  display: flex;
+  justify-content: center;
+}
+
+.stats-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  margin: auto;
+}
+
+.stat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 25%;
+}
+
+.stat {
+  font-size: 2rem;
+}
+
+.stat-label {
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.distribution {
+  width: 80%;
+  margin: auto;
 }

@@ -1,8 +1,10 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from "react-modal";
 import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
+import StatsModal from "./components/StatsModal";
 import WORDS from "./words.json";
 
 function App() {
@@ -31,9 +33,17 @@ function App() {
   const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
   const [animationDone, setAnimationDone] = useState(false);
-  const [modalIsOpen, setIsOpen] = useState(false);
 
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState("stats");
+
+  const [totalGames, setTotalGames] = useState(0);
+  const [losses, setLosses] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [highestStreak, setHighestStreak] = useState(0);
+  const [guessDistribution, setGuessDistribution] = useState<{
+    [key: string]: number; // index signature
+  }>({ one: 0, two: 7, three: 10, four: 17, five: 9, six: 4 });
   const [playedToday, setPlayedToday] = useState(false);
   const [won, setWon] = useState<boolean | null>(null);
 
@@ -47,6 +57,12 @@ function App() {
 
   function countLetter(word: string, letter: string) {
     return word.split("").filter((l) => l === letter).length;
+  }
+
+  function calcWinRate(losses: number, total: number) {
+    if (total === 0) return 0;
+    let percentage = (losses / total) * 100;
+    return Math.round(percentage);
   }
 
   function copyResultsClipboard() {
@@ -102,7 +118,6 @@ function App() {
     setCurrentGuess("");
     setGuesses([]);
     setAnimationDone(false);
-    setStreak(0);
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
@@ -132,13 +147,21 @@ function App() {
   function saveGame() {
     localStorage.setItem("board", JSON.stringify(board));
     localStorage.setItem("guesses", JSON.stringify(guesses));
+    localStorage.setItem("totalGames", JSON.stringify(totalGames));
+    localStorage.setItem("losses", JSON.stringify(losses));
     localStorage.setItem("streak", JSON.stringify(streak));
+    localStorage.setItem("highestStreak", JSON.stringify(highestStreak));
+    localStorage.setItem(
+      "guessDistribution",
+      JSON.stringify(guessDistribution)
+    );
     localStorage.setItem("playedToday", JSON.stringify(playedToday));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }
 
   function loadGame() {
     let data: { [key: string]: any } = {};
+    // typescript doesn't seem to understand localstorage so it has to be written this way
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
@@ -146,10 +169,14 @@ function App() {
     if (Object.keys(data).length === 0) return;
     setBoard(data.board);
     setGuesses(data.guesses);
+    setTotalGames(data.totalGames);
     setStreak(data.streak);
+    setHighestStreak(data.highestStreak);
+    //setGuessDistribution(data.guessDistribution);
     setPlayedToday(data.playedToday);
     setDarkMode(data.darkMode);
     if (data.playedToday) setEnableInput(false);
+    setWon(didGameEnd());
     setCurrentRow(data.guesses.length);
   }
 
@@ -167,12 +194,16 @@ function App() {
   function handleGameEnd(win: boolean | null) {
     if (win === null) return;
     if (win) {
-      setWon(true);
+      let dist = guessDistribution;
+      dist[Object.keys(dist)[guesses.length - 1]] += 1;
+      //setGuessDistribution(dist);
       setStreak(streak + 1);
     } else {
-      setWon(false);
+      setLosses(losses + 1);
       setStreak(0);
     }
+    setWon(win);
+    setTotalGames(totalGames + 1);
     setPlayedToday(true);
     setEnableInput(false);
   }
@@ -243,21 +274,66 @@ function App() {
     setBoard(newBoard);
   }
 
+  Modal.setAppElement("#root");
+
+  function openModal(type: string) {
+    setModalType(type);
+    setIsOpen(true);
+  }
+
+  function afterOpenModal() {}
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
   useEffect(() => {
     fetchDailyWord();
-    loadGame();
   }, []);
 
   useEffect(() => {
-    // async my detested
+    loadGame();
+  }, [dailyWord]); // didGameEnd won't work otherwise
+
+  useEffect(() => {
+    if (streak > highestStreak) setHighestStreak(streak);
+  }, [streak]);
+
+  useEffect(() => {
     saveGame();
-  }, [board, guesses, streak, playedToday, darkMode]);
+  }, [
+    board,
+    guesses,
+    totalGames,
+    losses,
+    streak,
+    highestStreak,
+    //guessDistribution,
+    playedToday,
+    darkMode,
+  ]);
+
+  const modalStyle = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      transform: "translate(-50%, -50%)",
+      width: "500px",
+    },
+  };
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
       <span>
+        <button onClick={() => openModal("rules")}>Rules</button>
         <button onClick={resetBoard}>Reset</button>
+        <button onClick={() => localStorage.clear()}>
+          localStorage.clear()
+        </button>
         <button onClick={copyResultsClipboard}>Share</button>
+        <button onClick={() => openModal("stats")}>Stats</button>
       </span>
 
       <Gameboard
@@ -273,6 +349,29 @@ function App() {
         handleKeyDown={handleKeyDown}
         guesses={guesses}
       />
+      <Modal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        contentLabel="Statistics"
+        style={modalStyle}
+      >
+        {modalType === "stats" ? (
+          <StatsModal
+            darkMode={darkMode}
+            won={won}
+            guesses={guesses}
+            totalGames={totalGames}
+            winRate={calcWinRate(losses, totalGames)}
+            streak={streak}
+            highestStreak={highestStreak}
+            guessDistribution={guessDistribution}
+            share={copyResultsClipboard}
+          />
+        ) : (
+          ""
+        )}
+      </Modal>
     </div>
   );
 }
