@@ -114,6 +114,36 @@
   align-items: center;
 }
 
+.ReactModal__Overlay {
+  animation: fadeIn 0.15s ease-in;
+}
+
+.ReactModal__Overlay--before-close {
+  animation: fadeOut 0.15s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0%;
+    transform: translateY(20px);
+  }
+}
+
 .close-btn {
   cursor: pointer;
   width: 1.5rem;

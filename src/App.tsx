@@ -169,7 +169,7 @@ function App() {
     setBoard(data.board);
     setGuesses(data.guesses);
     setPlayedToday(data.playedToday);
-    setWon(didGameEnd());
+    setWon(didGameEnd(data.guesses));
     setCurrentRow(data.guesses.length);
     if (data.playedToday) setEnableInput(false);
     setTotalGames(data.totalGames);
@@ -180,11 +180,11 @@ function App() {
     setDarkMode(data.darkMode);
   }
 
-  function didGameEnd() {
-    const lastGuess = guesses[guesses.length - 1];
+  function didGameEnd(guessArr: Array<string>) {
+    const lastGuess = guessArr[guessArr.length - 1];
     if (lastGuess === dailyWord) {
       return true;
-    } else if (guesses.length >= maxGuesses) {
+    } else if (guessArr.length >= maxGuesses) {
       return false;
     } else {
       return null;
@@ -211,6 +211,9 @@ function App() {
     setTimeout(() => {
       setShowWinMessage(true);
     }, 1400);
+    setTimeout(() => {
+      openModal("stats");
+    }, 2400);
   }
 
   function handleSubmit() {
@@ -230,7 +233,8 @@ function App() {
     setCurrentRowColors();
     setCurrentRow(currentRow + 1);
     setCurrentGuess("");
-    handleGameEnd(didGameEnd());
+    saveGame();
+    handleGameEnd(didGameEnd(guesses));
   }
 
   function setCurrentRowColors() {
@@ -285,10 +289,12 @@ function App() {
     setModalType(type);
     setIsOpen(true);
     setShowWinMessage(false);
+    setEnableInput(false);
   }
 
   function closeModal() {
     setIsOpen(false);
+    setEnableInput(true);
   }
 
   useEffect(() => {
@@ -296,23 +302,23 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!firstRender.current) return;
+    if (!firstRender.current) return; // DO NOT RUN ON MOUNT
     const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
     if (zardleDay !== day) {
       localStorage.setItem("zardleDay", JSON.stringify(zardleDay));
       resetBoard();
       saveGame();
     } else {
-      loadGame();
+      if (dailyWord !== "") loadGame();
     }
-  }, [zardleDay]);
+  }, [dailyWord, zardleDay]);
 
   useEffect(() => {
     if (streak > highestStreak) setHighestStreak(streak);
   }, [streak]);
 
   useEffect(() => {
-    if (firstRender.current) saveGame(); // DO NOT RUN ON MOUNT
+    if (firstRender.current) saveGame();
     firstRender.current = true;
   }, [
     board,
@@ -395,6 +401,7 @@ function App() {
         onRequestClose={closeModal}
         contentLabel="Statistics"
         style={modalStyle}
+        closeTimeoutMS={140}
       >
         {modal}
       </Modal>
