@@ -41,10 +41,6 @@ const StatsModal = ({
     return Math.round((num / total) * 100);
   };
 
-  // const tomorrow = new Date(today);
-  // tomorrow.setDate(tomorrow.getDate() + 1);
-  // tomorrow.setHours();
-
   return (
     <div className="stats-modal">
       <div className="close-btn" onClick={closeModal}>

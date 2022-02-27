@@ -4,6 +4,7 @@ import axios from "axios";
 import Modal from "react-modal";
 import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
+import WinMessage from "./components/WinMessage";
 import StatsModal from "./components/StatsModal";
 import WORDS from "./words.json";
 
@@ -21,22 +22,20 @@ function App() {
   const [dailyWord, setDailyWord] = useState("");
   const [zardleDay, setZardleDay] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
-
   const [board, setBoard] = useState(
     createDefaultBoard(wordLength, maxGuesses)
   );
   const [currentRow, setCurrentRow] = useState(0); // input row
-
   const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
   const [currentGuess, setCurrentGuess] = useState(""); // current input
   const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up current row as red if true
   const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
   const [animationDone, setAnimationDone] = useState(false);
-
+  const [winMessage, setWinMessage] = useState("");
+  const [showWinMessage, setShowWinMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("stats");
-
   const [totalGames, setTotalGames] = useState(0);
   const [losses, setLosses] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -46,12 +45,11 @@ function App() {
   }>({ one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 });
   const [playedToday, setPlayedToday] = useState(false);
   const [won, setWon] = useState<boolean | null>(null);
-
   const [backspacing, setBackspacing] = useState(false);
 
   async function fetchDailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setDailyWord("apple");
+    setDailyWord("react");
     setZardleDay(69);
   }
 
@@ -121,6 +119,7 @@ function App() {
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
+    setShowWinMessage(false);
   }
 
   function handleKeyDown(e: any, symbol: string = "") {
@@ -179,6 +178,7 @@ function App() {
       setZardleDay(zardleDay);
     }
     setTotalGames(data.totalGames);
+    setLosses(data.losses);
     setStreak(data.streak);
     setHighestStreak(data.highestStreak);
     setGuessDistribution(data.guessDistribution);
@@ -203,14 +203,19 @@ function App() {
       dist[Object.keys(dist)[guesses.length - 1]] += 1;
       setGuessDistribution(dist);
       setStreak(streak + 1);
+      setWinMessage(WIN_MESSAGE[guesses.length - 1]);
     } else {
       setLosses(losses + 1);
       setStreak(0);
+      setWinMessage(`"${dailyWord.toUpperCase()}"`);
     }
     setWon(win);
     setTotalGames(totalGames + 1);
     setPlayedToday(true);
     setEnableInput(false);
+    setTimeout(() => {
+      setShowWinMessage(true);
+    }, 1400);
   }
 
   function handleSubmit() {
@@ -284,9 +289,8 @@ function App() {
   function openModal(type: string) {
     setModalType(type);
     setIsOpen(true);
+    setShowWinMessage(false);
   }
-
-  function afterOpenModal() {}
 
   function closeModal() {
     setIsOpen(false);
@@ -303,6 +307,13 @@ function App() {
   useEffect(() => {
     if (streak > highestStreak) setHighestStreak(streak);
   }, [streak]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      //setShowWinMessage(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [winMessage]);
 
   useEffect(() => {
     saveGame();
@@ -329,6 +340,34 @@ function App() {
     },
   };
 
+  let modal;
+  switch (modalType) {
+    case "stats":
+      modal = (
+        <StatsModal
+          darkMode={darkMode}
+          won={won}
+          guesses={guesses}
+          totalGames={totalGames}
+          winRate={calcWinRate(losses, totalGames)}
+          streak={streak}
+          highestStreak={highestStreak}
+          guessDistribution={guessDistribution}
+          share={copyResultsClipboard}
+          closeModal={closeModal}
+        />
+      );
+      break;
+    case "rules":
+      modal = <div></div>;
+      break;
+    case "options":
+      modal = <div></div>;
+      break;
+    default:
+      modal = <div></div>;
+  }
+
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
       {zardleDay}
@@ -338,10 +377,9 @@ function App() {
         <button onClick={() => localStorage.clear()}>
           localStorage.clear()
         </button>
-        <button onClick={copyResultsClipboard}>Share</button>
         <button onClick={() => openModal("stats")}>Stats</button>
       </span>
-
+      <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
       <Gameboard
         board={board}
         wordLength={wordLength}
@@ -357,27 +395,11 @@ function App() {
       />
       <Modal
         isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
         contentLabel="Statistics"
         style={modalStyle}
       >
-        {modalType === "stats" ? (
-          <StatsModal
-            darkMode={darkMode}
-            won={won}
-            guesses={guesses}
-            totalGames={totalGames}
-            winRate={calcWinRate(losses, totalGames)}
-            streak={streak}
-            highestStreak={highestStreak}
-            guessDistribution={guessDistribution}
-            share={copyResultsClipboard}
-            closeModal={closeModal}
-          />
-        ) : (
-          ""
-        )}
+        {modal}
       </Modal>
     </div>
   );
