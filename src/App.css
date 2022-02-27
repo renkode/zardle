@@ -56,7 +56,7 @@
 
 .key {
   width: 50px;
-  height: 80px;
+  height: 70px;
   margin: 2px;
   border: 2px solid gray;
   border-radius: 10%;
@@ -64,7 +64,7 @@
   justify-content: center;
   align-items: center;
   transition-duration: 0.1s;
-  font-size: 20px;
+  font-size: 1rem;
   cursor: pointer;
 }
 
@@ -105,9 +105,24 @@
   border: 2px solid rgb(148, 148, 148);
 }
 
+.stats-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.close-btn {
+  cursor: pointer;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-self: flex-end;
+}
+
 h3 {
   display: flex;
   justify-content: center;
+  margin: 0px auto;
 }
 
 .stats-wrapper {
@@ -126,7 +141,7 @@ h3 {
 }
 
 .stat {
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 .stat-label {
@@ -136,5 +151,66 @@ h3 {
 
 .distribution {
   width: 80%;
-  margin: auto;
+  margin: 1rem auto;
+}
+
+.bar-wrapper {
+  display: flex;
+  flex-direction: row;
+  margin: 3px 0;
+}
+
+.bar {
+  color: white;
+  background-color: gray;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0px 6px;
+  margin-left: 4px;
+  line-height: 120%;
+  box-sizing: border-box;
+  min-width: 5%;
+}
+
+.countdown-share-wrapper {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 0.5rem;
+}
+
+.countdown-container {
+  border-right: 1px solid gray;
+}
+
+.countdown-container,
+.share-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 50%;
+  font-weight: bold;
+}
+
+.countdown {
+  font-size: 2.5rem;
+}
+
+.share {
+  color: white;
+  width: 75%;
+  height: 50%;
+  font-size: 1.5rem;
+  border: 0px;
+  background-color: rgb(128, 187, 52);
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+
+.share:hover {
+  background: rgb(87, 175, 47);
 }

@@ -1,5 +1,6 @@
 import "../App.css";
 import { memo } from "react";
+import Countdown from "react-countdown";
 
 interface StatsModalProps {
   darkMode: boolean;
@@ -13,6 +14,7 @@ interface StatsModalProps {
     [key: string]: number;
   };
   share(): void;
+  closeModal(): void;
 }
 
 const StatsModal = ({
@@ -25,9 +27,29 @@ const StatsModal = ({
   highestStreak,
   guessDistribution,
   share,
+  closeModal,
 }: StatsModalProps) => {
+  const findMaxFromDistribution = () => {
+    let arr: Array<number> = [];
+    Object.keys(guessDistribution).map((key) =>
+      arr.push(guessDistribution[key])
+    );
+    return Math.max(...arr);
+  };
+
+  const getBarWidth = (num: number, total: number) => {
+    return Math.round((num / total) * 100);
+  };
+
+  // const tomorrow = new Date(today);
+  // tomorrow.setDate(tomorrow.getDate() + 1);
+  // tomorrow.setHours();
+
   return (
     <div className="stats-modal">
+      <div className="close-btn" onClick={closeModal}>
+        X
+      </div>
       <h3>STATISTICS</h3>
       <div className="stats-wrapper">
         <div className="stat-container">
@@ -50,16 +72,44 @@ const StatsModal = ({
           <span className="stat-label">Max Streak</span>
         </div>
       </div>
-      <h3>GUESS DISTRIBUTION</h3>
       <div className="distribution">
-        {Object.keys(guessDistribution).map((key, i) => (
-          <div className="bar" key={i}>{`${i + 1}: ${
-            guessDistribution[key]
-          }`}</div>
-        ))}
+        <h3>GUESS DISTRIBUTION</h3>
+        {Object.keys(guessDistribution).map((key, i) => {
+          let count = guessDistribution[key];
+          let max = findMaxFromDistribution();
+          let barWidth = getBarWidth(count, max);
+          let bgColor = "gray";
+          if (won) {
+            if (guesses.length === i + 1) bgColor = "rgb(128, 187, 52)";
+          }
+          return (
+            <div className="bar-wrapper" key={i}>
+              {i + 1}
+              <div
+                className="bar"
+                style={{ width: `${barWidth}%`, backgroundColor: `${bgColor}` }}
+              >
+                {count}
+              </div>
+            </div>
+          );
+        })}
       </div>
-
-      <button onClick={share}>Share</button>
+      <div className="countdown-share-wrapper">
+        <div className="countdown-container">
+          <span>NEXT ZARDLE</span>
+          <Countdown
+            className="countdown"
+            date={Date.now() + 100000}
+            daysInHours={true}
+          />
+        </div>
+        <div className="share-container">
+          <button className="share" onClick={share}>
+            SHARE
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

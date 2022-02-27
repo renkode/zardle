@@ -43,7 +43,7 @@ function App() {
   const [highestStreak, setHighestStreak] = useState(0);
   const [guessDistribution, setGuessDistribution] = useState<{
     [key: string]: number; // index signature
-  }>({ one: 0, two: 7, three: 10, four: 17, five: 9, six: 4 });
+  }>({ one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 });
   const [playedToday, setPlayedToday] = useState(false);
   const [won, setWon] = useState<boolean | null>(null);
 
@@ -61,7 +61,7 @@ function App() {
 
   function calcWinRate(losses: number, total: number) {
     if (total === 0) return 0;
-    let percentage = (losses / total) * 100;
+    let percentage = ((total - losses) / total) * 100;
     return Math.round(percentage);
   }
 
@@ -121,7 +121,6 @@ function App() {
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
-    localStorage.clear();
   }
 
   function handleKeyDown(e: any, symbol: string = "") {
@@ -167,17 +166,23 @@ function App() {
       if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
     }
     if (Object.keys(data).length === 0) return;
-    setBoard(data.board);
-    setGuesses(data.guesses);
+    if (zardleDay === data.zardleDay) {
+      // resume play
+      setBoard(data.board);
+      setGuesses(data.guesses);
+      setPlayedToday(data.playedToday);
+      setWon(didGameEnd());
+      setCurrentRow(data.guesses.length);
+      if (data.playedToday) setEnableInput(false);
+    } else {
+      // start with fresh board
+      setZardleDay(zardleDay);
+    }
     setTotalGames(data.totalGames);
     setStreak(data.streak);
     setHighestStreak(data.highestStreak);
-    //setGuessDistribution(data.guessDistribution);
-    setPlayedToday(data.playedToday);
+    setGuessDistribution(data.guessDistribution);
     setDarkMode(data.darkMode);
-    if (data.playedToday) setEnableInput(false);
-    setWon(didGameEnd());
-    setCurrentRow(data.guesses.length);
   }
 
   function didGameEnd() {
@@ -196,7 +201,7 @@ function App() {
     if (win) {
       let dist = guessDistribution;
       dist[Object.keys(dist)[guesses.length - 1]] += 1;
-      //setGuessDistribution(dist);
+      setGuessDistribution(dist);
       setStreak(streak + 1);
     } else {
       setLosses(losses + 1);
@@ -308,7 +313,7 @@ function App() {
     losses,
     streak,
     highestStreak,
-    //guessDistribution,
+    guessDistribution,
     playedToday,
     darkMode,
   ]);
@@ -326,6 +331,7 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
+      {zardleDay}
       <span>
         <button onClick={() => openModal("rules")}>Rules</button>
         <button onClick={resetBoard}>Reset</button>
@@ -367,6 +373,7 @@ function App() {
             highestStreak={highestStreak}
             guessDistribution={guessDistribution}
             share={copyResultsClipboard}
+            closeModal={closeModal}
           />
         ) : (
           ""
