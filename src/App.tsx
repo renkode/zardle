@@ -9,6 +9,9 @@ import StatsModal from "./components/StatsModal";
 import WORDS from "./words.json";
 
 function App() {
+  const DAILY_WORD = useRef("");
+  const WORD_LENGTH = 5;
+  const MAX_GUESSES = 6;
   const WIN_MESSAGE = [
     "Genius",
     "Magnificent",
@@ -18,18 +21,16 @@ function App() {
     "Phew",
   ];
   const firstRender = useRef(false);
-  const [wordLength, setWordLength] = useState(5);
-  const [maxGuesses, setMaxGuesses] = useState(6);
-  const [dailyWord, setDailyWord] = useState("");
   const [zardleDay, setZardleDay] = useState(0);
   const [darkMode, setDarkMode] = useState(false);
   const [board, setBoard] = useState(
-    createDefaultBoard(wordLength, maxGuesses)
+    createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
   );
   const [currentRow, setCurrentRow] = useState(0); // input row
   const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
   const [currentGuess, setCurrentGuess] = useState(""); // current input
-  const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up current row as red if true
+  const [isCurrentInputValid, setIsCurrentInputValid] = useState(true); // light up current row as red if false
+  const [playShake, setPlayShake] = useState(false);
   const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
   const [playedAnimation, setPlayedAnimation] = useState(false);
@@ -48,10 +49,11 @@ function App() {
   const [won, setWon] = useState<boolean | null>(null);
   const [backspacing, setBackspacing] = useState(false);
 
-  async function fetchDailyWord() {
+  async function fetchdailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 100));
     setZardleDay(72);
-    setDailyWord("react");
+    //setdailyWord.current("react");
+    DAILY_WORD.current = "react";
   }
 
   function countLetter(word: string, letter: string) {
@@ -92,7 +94,7 @@ function App() {
         rowSquares = rowSquares.concat("\n"); // don't add newline at the last row
       squares = squares.concat(rowSquares);
     });
-    let text = `Zardle ${zardleDay} ${attempts}/${maxGuesses}\n\n${squares}`;
+    let text = `Zardle ${zardleDay} ${attempts}/${MAX_GUESSES}\n\n${squares}`;
     navigator.clipboard.writeText(text);
   }
 
@@ -111,7 +113,7 @@ function App() {
   }
 
   function resetBoard() {
-    const board = createDefaultBoard(wordLength, maxGuesses);
+    const board = createDefaultBoard(WORD_LENGTH, MAX_GUESSES);
     setBoard(board);
     setCurrentRow(0);
     setCurrentGuess("");
@@ -121,42 +123,6 @@ function App() {
     setPlayedToday(false);
     setEnableInput(true);
     setShowWinMessage(false);
-  }
-
-  function handleKeyDown(e: any, symbol: string = "") {
-    if (playedToday || !enableInput) return;
-    const key = symbol.toLowerCase() || e.key.toLowerCase(); //in-app keyboard or actual keyboard
-    const regex = /^[a-z]a{0,1}$/;
-    const input = currentGuess.toLowerCase();
-    setBackspacing(false);
-    // check if key pressed is a-z/A-Z/backspace/delete
-    if (key.match(regex)) {
-      // add letter
-      if (input.length < wordLength) setCurrentGuess(input.concat("", key));
-    } else if (key === "backspace" || key === "delete") {
-      // delete letter
-      if (key === "backspace") setBackspacing(true);
-      setCurrentGuess(input.slice(0, -1));
-    } else if (key === "enter" && input.length === wordLength) {
-      // submit
-      handleSubmit();
-    }
-  }
-
-  function saveGame() {
-    localStorage.setItem("board", JSON.stringify(board));
-    localStorage.setItem("guesses", JSON.stringify(guesses));
-    localStorage.setItem("totalGames", JSON.stringify(totalGames));
-    localStorage.setItem("losses", JSON.stringify(losses));
-    localStorage.setItem("streak", JSON.stringify(streak));
-    localStorage.setItem("highestStreak", JSON.stringify(highestStreak));
-    localStorage.setItem(
-      "guessDistribution",
-      JSON.stringify(guessDistribution)
-    );
-    localStorage.setItem("playedToday", JSON.stringify(playedToday));
-    localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }
 
   function loadGame() {
@@ -182,44 +148,42 @@ function App() {
     if (data.playedToday) setEnableInput(false);
   }
 
-  function didGameEnd(guessArr: Array<string>) {
-    const lastGuess = guessArr[guessArr.length - 1];
-    if (lastGuess === dailyWord) {
-      return true;
-    } else if (guessArr.length >= maxGuesses) {
-      return false;
+  function handleKeyDown(e: any, symbol: string = "") {
+    if (playedToday || !enableInput) return;
+    const key = symbol.toLowerCase() || e.key.toLowerCase(); //in-app keyboard or actual keyboard
+    const regex = /^[a-z]a{0,1}$/;
+    const input = currentGuess.toLowerCase();
+    setBackspacing(false);
+    // check if key pressed is a-z/A-Z/backspace/delete
+    if (key.match(regex)) {
+      // add letter
+      if (input.length < WORD_LENGTH) setCurrentGuess(input.concat("", key));
     } else {
-      return null;
+      setBackspacing(true);
+    }
+    if (key === "backspace" || key === "delete") {
+      // delete letter
+      setCurrentGuess(input.slice(0, -1));
+    } else if (key === "enter" && input.length === WORD_LENGTH) {
+      // submit
+      handleSubmit();
     }
   }
 
-  function handleGameEnd(win: boolean | null) {
-    if (win === null) return;
-    if (win) {
-      let dist = guessDistribution;
-      dist[Object.keys(dist)[guesses.length - 1]] += 1;
-      setGuessDistribution(dist);
-      setStreak(streak + 1);
-      setWinMessage(WIN_MESSAGE[guesses.length - 1]);
-    } else {
-      setLosses(losses + 1);
-      setStreak(0);
-      setWinMessage(`"${dailyWord.toUpperCase()}"`);
-    }
-    setWon(win);
-    setTotalGames(totalGames + 1);
-    setPlayedToday(true);
-    setEnableInput(false);
-    setTimeout(() => {
-      setShowWinMessage(true);
-    }, 1400);
-    setTimeout(() => {
-      openModal("stats");
-    }, 3000);
+  function validateWord(word: string) {
+    return WORDS.VALID_WORDS.includes(word);
   }
 
   function handleSubmit() {
-    if (isCurrentGuessInvalid || playedToday || !enableInput) return;
+    if (playedToday || !enableInput) return;
+    const isValid = validateWord(currentGuess);
+    if (!isValid) {
+      setIsCurrentInputValid(false);
+      setPlayShake(true);
+      setTimeout(() => setPlayShake(false), 1000);
+      return;
+    }
+    setIsCurrentInputValid(true);
     const g = guesses;
     g.push(currentGuess);
     setGuesses(g);
@@ -248,9 +212,9 @@ function App() {
       const letter = tile.symbol;
       if (letter.length === 0) return;
       // assign letters to colored array
-      if (letter === dailyWord[index]) {
+      if (letter === DAILY_WORD.current[index]) {
         greenArr.push({ symbol: letter, index: index });
-      } else if (dailyWord.includes(letter)) {
+      } else if (DAILY_WORD.current.includes(letter)) {
         // skip if already in array
         if (yellowArr.some((y) => y.symbol === letter && y.index === index))
           return;
@@ -258,7 +222,7 @@ function App() {
         if (
           yellowArr.filter((y) => y.symbol === letter).length +
             greenArr.filter((g) => g.symbol === letter).length >=
-          countLetter(dailyWord, letter)
+          countLetter(DAILY_WORD.current, letter)
         )
           return;
         yellowArr.push({ symbol: letter, index: index });
@@ -267,7 +231,7 @@ function App() {
       // e.g. for "APPLE", the first P in "PPP__" will flip back to gray after 3rd input
       if (
         greenArr.filter((g) => g.symbol === letter).length ===
-        countLetter(dailyWord, letter)
+        countLetter(DAILY_WORD.current, letter)
       )
         yellowArr = yellowArr.filter((y) => y.symbol !== letter);
     });
@@ -285,6 +249,58 @@ function App() {
     setBoard(newBoard);
   }
 
+  function didGameEnd(guessArr: Array<string>) {
+    const lastGuess = guessArr[guessArr.length - 1];
+    if (lastGuess === DAILY_WORD.current) {
+      return true;
+    } else if (guessArr.length >= MAX_GUESSES) {
+      return false;
+    } else {
+      return null;
+    }
+  }
+
+  function handleGameEnd(win: boolean | null) {
+    if (win === null) return;
+    if (win) {
+      let dist = guessDistribution;
+      dist[Object.keys(dist)[guesses.length - 1]] += 1;
+      setGuessDistribution(dist);
+      setStreak(streak + 1);
+      setWinMessage(WIN_MESSAGE[guesses.length - 1]);
+    } else {
+      setLosses(losses + 1);
+      setStreak(0);
+      setWinMessage(`"${DAILY_WORD.current.toUpperCase()}"`);
+    }
+    setWon(win);
+    setTotalGames(totalGames + 1);
+    setPlayedToday(true);
+    setEnableInput(false);
+    setTimeout(() => {
+      setShowWinMessage(true);
+    }, 1400);
+    setTimeout(() => {
+      openModal("stats");
+    }, 3000);
+  }
+
+  function saveGame() {
+    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem("guesses", JSON.stringify(guesses));
+    localStorage.setItem("totalGames", JSON.stringify(totalGames));
+    localStorage.setItem("losses", JSON.stringify(losses));
+    localStorage.setItem("streak", JSON.stringify(streak));
+    localStorage.setItem("highestStreak", JSON.stringify(highestStreak));
+    localStorage.setItem(
+      "guessDistribution",
+      JSON.stringify(guessDistribution)
+    );
+    localStorage.setItem("playedToday", JSON.stringify(playedToday));
+    localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }
+
   Modal.setAppElement("#root");
 
   function openModal(type: string) {
@@ -300,7 +316,7 @@ function App() {
   }
 
   useEffect(() => {
-    fetchDailyWord();
+    fetchdailyWord();
   }, []);
 
   useEffect(() => {
@@ -311,9 +327,9 @@ function App() {
       resetBoard();
       saveGame();
     } else {
-      if (dailyWord !== "") loadGame();
+      if (DAILY_WORD.current !== "") loadGame();
     }
-  }, [dailyWord, zardleDay]);
+  }, [DAILY_WORD.current, zardleDay]);
 
   useEffect(() => {
     if (streak > highestStreak) setHighestStreak(streak);
@@ -334,6 +350,15 @@ function App() {
     playedAnimation,
     darkMode,
   ]);
+
+  useEffect(() => {
+    if (currentGuess.length < WORD_LENGTH) {
+      setIsCurrentInputValid(true);
+      return;
+    }
+    const isValid = validateWord(currentGuess);
+    setIsCurrentInputValid(isValid);
+  }, [currentGuess]);
 
   const modalStyle = {
     content: {
@@ -388,10 +413,12 @@ function App() {
       <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
       <Gameboard
         board={board}
-        wordLength={wordLength}
+        WORD_LENGTH={WORD_LENGTH}
         currentGuess={currentGuess}
+        isCurrentInputValid={isCurrentInputValid}
         currentRow={currentRow}
         backspacing={backspacing}
+        playShake={playShake}
         playedAnimation={playedAnimation}
         setPlayedAnimation={setPlayedAnimation}
       />

@@ -1,27 +1,31 @@
 import "../App.css";
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import Tile from "./Tile";
 import ReactCardFlip from "react-card-flip";
 
 interface RowProps {
   boardRow: Array<{ symbol: string; color: string }>;
   active: boolean;
-  backspacing: boolean;
-  playedAnimation: boolean;
+  isCurrentInputValid: boolean;
+  backspacing?: boolean;
+  playShake?: boolean;
+  playedAnimation?: boolean;
   setPlayedAnimation(isDone: boolean): void;
 }
 
 const Row = ({
   boardRow,
   active,
-  backspacing,
-  playedAnimation,
+  isCurrentInputValid,
+  backspacing = false,
+  playShake = false,
+  playedAnimation = false,
   setPlayedAnimation,
 }: RowProps) => {
+  const TIME_STAGGER = 200;
   const [flip, setFlip] = useState<Array<boolean>>([]);
   const [bounce, setBounce] = useState<Array<boolean>>([]);
   const [count, setCount] = useState(0);
-  const canBounce = useRef<any>(false);
 
   function flipTile(index: number) {
     let arr = flip;
@@ -56,7 +60,7 @@ const Row = ({
       setTimeout(() => {
         flipTile(count);
         setCount(count + 1);
-      }, 200);
+      }, TIME_STAGGER);
     }
     // do bounce animation only after tile is flipped
     if (!playedAnimation && boardRow.every((tile) => tile.color === "green")) {
@@ -64,21 +68,26 @@ const Row = ({
         setTimeout(() => {
           bounceTile(count);
           setCount(count + 1);
-        }, 300);
+        }, TIME_STAGGER);
       }
       setTimeout(() => {
         setCount(0);
-      }, 1000);
+      }, TIME_STAGGER * 5);
       setTimeout(() => {
         setPlayedAnimation(true);
-      }, 2000);
+      }, TIME_STAGGER * 10);
     }
   });
 
   return (
     <div className="row">
       {boardRow.map((slot, slotIndex) => {
-        let bounceAni = `${bounce[slotIndex] ? "bounce" : ""}`;
+        // classes
+        let invalid = `${!active ? "" : isCurrentInputValid ? "" : "invalid"}`;
+        let shakeAni = `${playShake && active ? "shake" : ""}`;
+        let bounceAni = `${
+          flip[slotIndex] && bounce[slotIndex] ? "bounce" : ""
+        }`;
         let transformAni = `${
           !flip[slotIndex] &&
           active &&
@@ -87,16 +96,16 @@ const Row = ({
             ? "transform"
             : ""
         }`;
+
         return (
           <ReactCardFlip
             isFlipped={flip[slotIndex]}
             flipDirection="vertical"
             key={slotIndex}
-            containerClassName={`${
-              flip[slotIndex] && bounce[slotIndex] ? bounceAni : ""
-            } ${transformAni}`}
+            containerClassName={`${shakeAni}
+               ${bounceAni} ${transformAni}`}
           >
-            <Tile letter={slot.symbol.toUpperCase()} />
+            <Tile letter={slot.symbol.toUpperCase()} color={invalid} />
             <Tile letter={slot.symbol.toUpperCase()} color={slot.color} />
           </ReactCardFlip>
         );
