@@ -32,7 +32,7 @@ function App() {
   const [isCurrentGuessInvalid, setIsCurrentGuessInvalid] = useState(false); // light up current row as red if true
   const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
-  const [animationDone, setAnimationDone] = useState(false);
+  const [playedAnimation, setPlayedAnimation] = useState(false);
   const [winMessage, setWinMessage] = useState("");
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -116,7 +116,7 @@ function App() {
     setCurrentRow(0);
     setCurrentGuess("");
     setGuesses([]);
-    setAnimationDone(false);
+    setPlayedAnimation(false);
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
@@ -155,6 +155,7 @@ function App() {
       JSON.stringify(guessDistribution)
     );
     localStorage.setItem("playedToday", JSON.stringify(playedToday));
+    localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }
 
@@ -171,13 +172,14 @@ function App() {
     setPlayedToday(data.playedToday);
     setWon(didGameEnd(data.guesses));
     setCurrentRow(data.guesses.length);
-    if (data.playedToday) setEnableInput(false);
     setTotalGames(data.totalGames);
     setLosses(data.losses);
     setStreak(data.streak);
     setHighestStreak(data.highestStreak);
     setGuessDistribution(data.guessDistribution);
+    setPlayedAnimation(data.playedAnimation);
     setDarkMode(data.darkMode);
+    if (data.playedToday) setEnableInput(false);
   }
 
   function didGameEnd(guessArr: Array<string>) {
@@ -213,7 +215,7 @@ function App() {
     }, 1400);
     setTimeout(() => {
       openModal("stats");
-    }, 2400);
+    }, 3000);
   }
 
   function handleSubmit() {
@@ -329,6 +331,7 @@ function App() {
     highestStreak,
     guessDistribution,
     playedToday,
+    playedAnimation,
     darkMode,
   ]);
 
@@ -389,7 +392,8 @@ function App() {
         currentGuess={currentGuess}
         currentRow={currentRow}
         backspacing={backspacing}
-        setAnimationDone={setAnimationDone}
+        playedAnimation={playedAnimation}
+        setPlayedAnimation={setPlayedAnimation}
       />
       <Keyboard
         lastRow={board[currentRow - 1]}

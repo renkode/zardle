@@ -9,7 +9,8 @@ interface BoardProps {
   currentGuess: string;
   currentRow: number;
   backspacing: boolean;
-  setAnimationDone: Function;
+  playedAnimation: boolean;
+  setPlayedAnimation(isDone: boolean): void;
 }
 
 const Gameboard = ({
@@ -18,7 +19,8 @@ const Gameboard = ({
   currentGuess,
   currentRow,
   backspacing,
-  setAnimationDone,
+  playedAnimation,
+  setPlayedAnimation,
 }: BoardProps) => {
   let emptySpaceLength = wordLength - currentGuess.length;
   let rowInput = Array.from(
@@ -39,7 +41,8 @@ const Gameboard = ({
           boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
           active={rowIndex === currentRow ? true : false}
           backspacing={backspacing}
-          setAnimationDone={setAnimationDone}
+          playedAnimation={playedAnimation}
+          setPlayedAnimation={setPlayedAnimation}
         />
       ))}
     </div>

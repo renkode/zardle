@@ -28,6 +28,10 @@
   animation: transform 0.1s ease-in;
 }
 
+.bounce {
+  animation: bounce 1s ease;
+}
+
 @keyframes transform {
   0% {
     transform: scale(95%, 95%);
@@ -38,6 +42,28 @@
   100% {
     transform: scale(100%, 100%);
   }
+}
+
+/*animate.style*/
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+.bounce {
+  animation-name: bounce;
+  transform-origin: center bottom;
 }
 
 .row {
