@@ -1,7 +1,6 @@
 import "../App.css";
 import { memo } from "react";
 import Row from "./Row";
-// don't memo this or else it won't render state change
 
 interface BoardProps {
   board: Array<Array<{ symbol: string; color: string }>>;
@@ -42,6 +41,7 @@ const Gameboard = ({
       {board.map((row, rowIndex) => (
         <Row
           key={rowIndex}
+          tileSize={"70px"}
           boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
           isCurrentInputValid={isCurrentInputValid}
           active={rowIndex === currentRow ? true : false}

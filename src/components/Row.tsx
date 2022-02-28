@@ -4,16 +4,18 @@ import Tile from "./Tile";
 import ReactCardFlip from "react-card-flip";
 
 interface RowProps {
+  tileSize: string;
   boardRow: Array<{ symbol: string; color: string }>;
   active: boolean;
   isCurrentInputValid: boolean;
   backspacing?: boolean;
   playShake?: boolean;
   playedAnimation?: boolean;
-  setPlayedAnimation(isDone: boolean): void;
+  setPlayedAnimation?(isDone: boolean): void;
 }
 
 const Row = ({
+  tileSize,
   boardRow,
   active,
   isCurrentInputValid,
@@ -73,6 +75,7 @@ const Row = ({
       setTimeout(() => {
         setCount(0);
       }, TIME_STAGGER * 5);
+      if (!setPlayedAnimation) return;
       setTimeout(() => {
         setPlayedAnimation(true);
       }, TIME_STAGGER * 10);
@@ -99,14 +102,22 @@ const Row = ({
 
         return (
           <ReactCardFlip
-            isFlipped={flip[slotIndex]}
+            isFlipped={slot.color !== "" && flip[slotIndex]}
             flipDirection="vertical"
             key={slotIndex}
             containerClassName={`${shakeAni}
                ${bounceAni} ${transformAni}`}
           >
-            <Tile letter={slot.symbol.toUpperCase()} color={invalid} />
-            <Tile letter={slot.symbol.toUpperCase()} color={slot.color} />
+            <Tile
+              tileSize={tileSize}
+              letter={slot.symbol.toUpperCase()}
+              color={invalid}
+            />
+            <Tile
+              tileSize={tileSize}
+              letter={slot.symbol.toUpperCase()}
+              color={slot.color}
+            />
           </ReactCardFlip>
         );
       })}

@@ -75,7 +75,6 @@
 .row {
   display: flex;
   flex-direction: row;
-  justify-items: center;
   align-items: center;
 }
 
@@ -308,4 +307,20 @@ h3 {
   align-items: center;
   background-color: rgb(205, 208, 209);
   font-weight: bold;
+}
+
+.rules-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.rules-modal p {
+  margin-top: 0px;
+}
+
+hr {
+  width: 100%;
+  background-color: rgb(194, 194, 194);
+  border: 0px;
+  height: 1px;
 }

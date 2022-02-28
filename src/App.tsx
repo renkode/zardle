@@ -6,6 +6,7 @@ import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
 import WinMessage from "./components/WinMessage";
 import StatsModal from "./components/StatsModal";
+import RulesModal from "./components/RulesModal";
 import WORDS from "./words.json";
 
 function App() {
@@ -390,7 +391,7 @@ function App() {
       );
       break;
     case "rules":
-      modal = <div></div>;
+      modal = <RulesModal closeModal={closeModal} />;
       break;
     case "options":
       modal = <div></div>;
