@@ -28,14 +28,11 @@ const Gameboard = ({
   setPlayedAnimation,
 }: BoardProps) => {
   let emptySpaceLength = WORD_LENGTH - currentGuess.length;
-  let rowInput = Array.from(
-    { length: currentGuess.length },
-    (v, i) => (v = { symbol: currentGuess[i], color: "" })
-  ).concat(
-    Array.from(
-      { length: emptySpaceLength },
-      (v) => (v = { symbol: "", color: "" })
-    )
+  let rowInput = Array.from({ length: currentGuess.length }, (_, i) => ({
+    symbol: currentGuess[i],
+    color: "",
+  })).concat(
+    Array.from({ length: emptySpaceLength }, () => ({ symbol: "", color: "" }))
   );
 
   return (
@@ -44,7 +41,7 @@ const Gameboard = ({
         <Row
           key={rowIndex}
           tileSize={"70px"}
-          boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
+          boardRow={rowIndex === currentRow ? rowInput : row}
           enableWordCheck={enableWordCheck}
           isCurrentInputValid={isCurrentInputValid}
           active={rowIndex === currentRow ? true : false}

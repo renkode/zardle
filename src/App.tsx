@@ -22,43 +22,28 @@ function App() {
     "Great",
     "Phew",
   ];
+  const DEFAULT_STATS = {
+    totalGames: 0,
+    streak: 0,
+    highestStreak: 0,
+    losses: 0,
+    guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
+  };
   const firstRender = useRef(false);
   const [zardleDay, setZardleDay] = useState(0);
-  // const [darkMode, setDarkMode] = useState(false);
-  const boardState = useState<{
-    darkMode: boolean;
-    hardMode: boolean;
-    board: Array<Array<{ symbol: string; color: string }>>;
-    guesses: Array<string>;
-    currentGuess: string;
-    currentRow: number;
-    enableWordCheck: boolean;
-    playedAnimation: boolean;
-    playedToday: boolean;
-    won: boolean | null;
-  }>({
-    darkMode: false,
-    hardMode: false,
-    board: createDefaultBoard(WORD_LENGTH, MAX_GUESSES),
-    guesses: [],
-    currentGuess: "",
-    currentRow: 0,
-    enableWordCheck: false,
-    playedAnimation: false,
-    playedToday: false,
-    won: false,
-  });
-  // const [board, setBoard] = useState(
-  //   createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
-  // );
-  // const [currentRow, setCurrentRow] = useState(0); // input row
-  // const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
-  // const [currentGuess, setCurrentGuess] = useState(""); // current input
+  const [darkMode, setDarkMode] = useState(false);
+  const [hardMode, setHardMode] = useState(false);
+  const [board, setBoard] = useState(
+    createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
+  );
+  const [currentRow, setCurrentRow] = useState(0); // input row
+  const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
+  const [currentGuess, setCurrentGuess] = useState(""); // current input
   const [isCurrentInputValid, setIsCurrentInputValid] = useState(true); // light up current row as red if false
   const [playShake, setPlayShake] = useState(false);
-  // const [enableWordCheck, setEnableWordCheck] = useState(true);
+  const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
-  // const [playedAnimation, setPlayedAnimation] = useState(false);
+  const [playedAnimation, setPlayedAnimation] = useState(false);
   const [winMessage, setWinMessage] = useState("");
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -70,21 +55,14 @@ function App() {
     highestStreak: number;
     losses: number;
     guessDistribution: { [key: string]: number };
-  }>({
-    totalGames: 0,
-    streak: 0,
-    highestStreak: 0,
-    losses: 0,
-    guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
-  });
-  // const [playedToday, setPlayedToday] = useState(false);
-  // const [won, setWon] = useState<boolean | null>(null);
+  }>(DEFAULT_STATS);
+  const [playedToday, setPlayedToday] = useState(false);
+  const [won, setWon] = useState<boolean | null>(null);
   const [backspacing, setBackspacing] = useState(false);
 
   async function fetchdailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 100));
     setZardleDay(72);
-    //setdailyWord.current("react");
     DAILY_WORD.current = "react";
   }
 
@@ -98,13 +76,20 @@ function App() {
     return Math.round(percentage);
   }
 
+  function importData(str: string) {
+    if (str.length === 0) return;
+    const data = JSON.parse(str);
+    for (let key in data) {
+      data[key] = JSON.parse(data[key]);
+    }
+    loadGame(data, true);
+  }
+
   function copyResultsClipboard() {
-    if (!boardState.playedToday) return;
+    if (!playedToday) return;
     let squares = "";
-    const attempts = boardState.won
-      ? boardState.guesses.length.toString()
-      : "X";
-    const coloredBoard = boardState.board.filter((row) =>
+    const attempts = won ? guesses.length.toString() : "X";
+    const coloredBoard = board.filter((row) =>
       row.some((tile) => tile.color !== "")
     );
     coloredBoard.forEach((row, rowIndex) => {
@@ -130,6 +115,10 @@ function App() {
     });
     let text = `Zardle ${zardleDay} ${attempts}/${MAX_GUESSES}\n\n${squares}`;
     navigator.clipboard.writeText(text);
+  }
+
+  function copyDataClipboard() {
+    navigator.clipboard.writeText(JSON.stringify(localStorage));
   }
 
   function createDefaultBoard(
@@ -159,23 +148,51 @@ function App() {
     setShowWinMessage(false);
   }
 
-  function loadGame() {
+  function resetStats() {
+    setStats({
+      totalGames: 0,
+      streak: 0,
+      highestStreak: 0,
+      losses: 0,
+      guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
+    });
+  }
+
+  function resetData() {
+    if (
+      window.confirm(
+        "Are you sure you want to reset? You will lose all your stats!"
+      )
+    ) {
+      localStorage.clear();
+      resetBoard();
+      resetStats();
+      closeModal();
+    }
+  }
+
+  function loadGame(storage: Storage, importing: boolean = false) {
     let data: { [key: string]: any } = {};
-    // typescript doesn't seem to understand localstorage so it has to be written this way
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
+    if (!importing) {
+      // typescript doesn't seem to understand localstorage so it has to be written this way
+      for (let i = 0; i < storage.length; i++) {
+        const key = storage.key(i);
+        if (key) data[key] = JSON.parse(storage.getItem(key) || "{}");
+      }
+    } else {
+      data = storage;
     }
     if (Object.keys(data).length === 0) return;
-    setBoard(data.board);
-    setGuesses(data.guesses);
-    setPlayedToday(data.playedToday);
-    setWon(didGameEnd(data.guesses));
-    setCurrentRow(data.guesses.length);
-    setStats(data.stats);
-    setPlayedAnimation(data.playedAnimation);
-    setEnableWordCheck(data.enableWordCheck);
-    setDarkMode(data.darkMode);
+    setBoard(data.board || createDefaultBoard(WORD_LENGTH, MAX_GUESSES));
+    setGuesses(data.guesses || []);
+    setPlayedToday(data.playedToday || false);
+    setWon(didGameEnd(data.guesses || []));
+    setCurrentRow(data.guesses.length || 0);
+    setStats(data.stats || DEFAULT_STATS);
+    setPlayedAnimation(data.playedAnimation || false);
+    setEnableWordCheck(data.enableWordCheck || false);
+    setDarkMode(data.darkMode || false);
+    setHardMode(data.hardMode || false);
     if (data.playedToday) setEnableInput(false);
   }
 
@@ -326,6 +343,7 @@ function App() {
     localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    localStorage.setItem("hardMode", JSON.stringify(darkMode));
   }
 
   Modal.setAppElement("#root");
@@ -354,7 +372,7 @@ function App() {
       resetBoard();
       saveGame();
     } else {
-      if (DAILY_WORD.current !== "") loadGame();
+      if (DAILY_WORD.current !== "") loadGame(localStorage);
     }
   }, [DAILY_WORD.current, zardleDay]);
 
@@ -364,7 +382,7 @@ function App() {
       tempStats.highestStreak = stats.streak;
       setStats(tempStats);
     }
-  }, [stats]);
+  }, [stats.streak]);
 
   useEffect(() => {
     if (firstRender.current) saveGame();
@@ -420,10 +438,15 @@ function App() {
     case "options":
       modal = (
         <OptionsModal
+          hardMode={hardMode}
+          setHardMode={setHardMode}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
+          copyDataClipboard={copyDataClipboard}
+          importData={importData}
+          resetData={resetData}
           closeModal={closeModal}
         />
       );
@@ -438,7 +461,7 @@ function App() {
       <span>
         <button onClick={() => openModal("rules")}>Rules</button>
         <button onClick={resetBoard}>Reset</button>
-        <button onClick={() => localStorage.clear()}>Clear data</button>
+        <button onClick={() => resetBoard()}>Clear data</button>
         <button onClick={() => openModal("stats")}>Stats</button>
         <button onClick={() => openModal("options")}>Options</button>
       </span>

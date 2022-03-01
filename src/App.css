@@ -145,12 +145,18 @@
   border: 0px;
 }
 
-.key.green:hover {
+.key.green:hover,
+.copy-btn:hover {
   background: #57af2f;
 }
 
-.key.yellow:hover {
+.key.yellow:hover,
+.import-btn:hover {
   background: #d19e11;
+}
+
+.reset-btn:hover {
+  background: #ca3434;
 }
 
 .key.gray:hover {
@@ -330,12 +336,15 @@ hr {
   height: 1px;
 }
 
+.options-modal hr {
+  margin: 18px 0px;
+}
+
 .option-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 14px 0px;
 }
 
 .label-container {
@@ -350,4 +359,39 @@ hr {
 .option-description {
   font-size: 0.8rem;
   color: gray;
+}
+
+textarea {
+  width: 100%;
+}
+
+.import-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.copy-btn,
+.import-btn,
+.reset-btn {
+  width: 20%;
+  height: 2rem;
+  font-size: 1rem;
+  border: 0px;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+
+.copy-btn {
+  background-color: #80bb34;
+}
+
+.import-btn {
+  background-color: #ddb917;
+}
+
+.reset-btn {
+  background-color: rgb(230, 66, 66);
 }
