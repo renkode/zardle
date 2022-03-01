@@ -94,7 +94,13 @@ const StatsModal = ({
           <span>NEXT ZARDLE</span>
           <Countdown
             className="countdown"
-            date={Date.now() + 100000}
+            date={
+              new Date(
+                `${
+                  new Date().getMonth() + 1
+                }/${new Date().getDate()}/${new Date().getFullYear()} 9: PM PST`
+              )
+            }
             daysInHours={true}
           />
         </div>
@@ -107,5 +113,4 @@ const StatsModal = ({
     </div>
   );
 };
-
 export default memo(StatsModal);

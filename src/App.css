@@ -363,6 +363,7 @@ hr {
 
 textarea {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .import-container {

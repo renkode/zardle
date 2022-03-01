@@ -457,6 +457,7 @@ function App() {
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
+      {DAILY_WORD.current}
       {zardleDay}
       <span>
         <button onClick={() => openModal("rules")}>Rules</button>
