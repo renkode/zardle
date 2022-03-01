@@ -6,6 +6,7 @@ interface BoardProps {
   board: Array<Array<{ symbol: string; color: string }>>;
   WORD_LENGTH: number;
   currentGuess: string;
+  enableWordCheck: boolean;
   isCurrentInputValid: boolean;
   currentRow: number;
   backspacing: boolean;
@@ -18,6 +19,7 @@ const Gameboard = ({
   board,
   WORD_LENGTH,
   currentGuess,
+  enableWordCheck,
   isCurrentInputValid,
   currentRow,
   backspacing,
@@ -43,6 +45,7 @@ const Gameboard = ({
           key={rowIndex}
           tileSize={"70px"}
           boardRow={rowIndex === currentRow ? rowInput : board[rowIndex]}
+          enableWordCheck={enableWordCheck}
           isCurrentInputValid={isCurrentInputValid}
           active={rowIndex === currentRow ? true : false}
           backspacing={backspacing}

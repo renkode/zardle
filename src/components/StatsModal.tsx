@@ -6,12 +6,13 @@ interface StatsModalProps {
   darkMode: boolean;
   won: boolean | null;
   guesses: Array<string>;
-  totalGames: number;
   winRate: number;
-  streak: number;
-  highestStreak: number;
-  guessDistribution: {
-    [key: string]: number;
+  stats: {
+    totalGames: number;
+    streak: number;
+    highestStreak: number;
+    losses: number;
+    guessDistribution: { [key: string]: number };
   };
   share(): void;
   closeModal(): void;
@@ -21,18 +22,15 @@ const StatsModal = ({
   darkMode,
   won,
   guesses,
-  totalGames,
   winRate,
-  streak,
-  highestStreak,
-  guessDistribution,
+  stats,
   share,
   closeModal,
 }: StatsModalProps) => {
   const findMaxFromDistribution = () => {
     let arr: Array<number> = [];
-    Object.keys(guessDistribution).map((key) =>
-      arr.push(guessDistribution[key])
+    Object.keys(stats.guessDistribution).map((key) =>
+      arr.push(stats.guessDistribution[key])
     );
     return Math.max(...arr);
   };
@@ -49,7 +47,7 @@ const StatsModal = ({
       <h3>STATISTICS</h3>
       <div className="stats-wrapper">
         <div className="stat-container">
-          <span className="stat">{totalGames}</span>
+          <span className="stat">{stats.totalGames}</span>
           <span className="stat-label">Played</span>
         </div>
 
@@ -59,19 +57,19 @@ const StatsModal = ({
         </div>
 
         <div className="stat-container">
-          <span className="stat">{streak}</span>
+          <span className="stat">{stats.streak}</span>
           <span className="stat-label">Current Streak</span>
         </div>
 
         <div className="stat-container">
-          <span className="stat">{highestStreak}</span>
+          <span className="stat">{stats.highestStreak}</span>
           <span className="stat-label">Max Streak</span>
         </div>
       </div>
       <div className="distribution">
         <h3>GUESS DISTRIBUTION</h3>
-        {Object.keys(guessDistribution).map((key, i) => {
-          let count = guessDistribution[key];
+        {Object.keys(stats.guessDistribution).map((key, i) => {
+          let count = stats.guessDistribution[key];
           let max = findMaxFromDistribution();
           let barWidth = getBarWidth(count, max);
           let bgColor = "gray";

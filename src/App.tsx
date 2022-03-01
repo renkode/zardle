@@ -7,6 +7,7 @@ import Keyboard from "./components/Keyboard";
 import WinMessage from "./components/WinMessage";
 import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
+import OptionsModal from "./components/OptionsModal";
 import WORDS from "./words.json";
 
 function App() {
@@ -23,31 +24,61 @@ function App() {
   ];
   const firstRender = useRef(false);
   const [zardleDay, setZardleDay] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
-  const [board, setBoard] = useState(
-    createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
-  );
-  const [currentRow, setCurrentRow] = useState(0); // input row
-  const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
-  const [currentGuess, setCurrentGuess] = useState(""); // current input
+  // const [darkMode, setDarkMode] = useState(false);
+  const boardState = useState<{
+    darkMode: boolean;
+    hardMode: boolean;
+    board: Array<Array<{ symbol: string; color: string }>>;
+    guesses: Array<string>;
+    currentGuess: string;
+    currentRow: number;
+    enableWordCheck: boolean;
+    playedAnimation: boolean;
+    playedToday: boolean;
+    won: boolean | null;
+  }>({
+    darkMode: false,
+    hardMode: false,
+    board: createDefaultBoard(WORD_LENGTH, MAX_GUESSES),
+    guesses: [],
+    currentGuess: "",
+    currentRow: 0,
+    enableWordCheck: false,
+    playedAnimation: false,
+    playedToday: false,
+    won: false,
+  });
+  // const [board, setBoard] = useState(
+  //   createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
+  // );
+  // const [currentRow, setCurrentRow] = useState(0); // input row
+  // const [guesses, setGuesses] = useState<Array<string>>([]); // list of guesses
+  // const [currentGuess, setCurrentGuess] = useState(""); // current input
   const [isCurrentInputValid, setIsCurrentInputValid] = useState(true); // light up current row as red if false
   const [playShake, setPlayShake] = useState(false);
-  const [enableWordCheck, setEnableWordCheck] = useState(true);
+  // const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
-  const [playedAnimation, setPlayedAnimation] = useState(false);
+  // const [playedAnimation, setPlayedAnimation] = useState(false);
   const [winMessage, setWinMessage] = useState("");
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("stats");
-  const [totalGames, setTotalGames] = useState(0);
-  const [losses, setLosses] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [highestStreak, setHighestStreak] = useState(0);
-  const [guessDistribution, setGuessDistribution] = useState<{
-    [key: string]: number; // index signature
-  }>({ one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 });
-  const [playedToday, setPlayedToday] = useState(false);
-  const [won, setWon] = useState<boolean | null>(null);
+
+  const [stats, setStats] = useState<{
+    totalGames: number;
+    streak: number;
+    highestStreak: number;
+    losses: number;
+    guessDistribution: { [key: string]: number };
+  }>({
+    totalGames: 0,
+    streak: 0,
+    highestStreak: 0,
+    losses: 0,
+    guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
+  });
+  // const [playedToday, setPlayedToday] = useState(false);
+  // const [won, setWon] = useState<boolean | null>(null);
   const [backspacing, setBackspacing] = useState(false);
 
   async function fetchdailyWord() {
@@ -68,10 +99,12 @@ function App() {
   }
 
   function copyResultsClipboard() {
-    if (!playedToday) return;
+    if (!boardState.playedToday) return;
     let squares = "";
-    const attempts = won ? guesses.length.toString() : "X";
-    const coloredBoard = board.filter((row) =>
+    const attempts = boardState.won
+      ? boardState.guesses.length.toString()
+      : "X";
+    const coloredBoard = boardState.board.filter((row) =>
       row.some((tile) => tile.color !== "")
     );
     coloredBoard.forEach((row, rowIndex) => {
@@ -139,12 +172,9 @@ function App() {
     setPlayedToday(data.playedToday);
     setWon(didGameEnd(data.guesses));
     setCurrentRow(data.guesses.length);
-    setTotalGames(data.totalGames);
-    setLosses(data.losses);
-    setStreak(data.streak);
-    setHighestStreak(data.highestStreak);
-    setGuessDistribution(data.guessDistribution);
+    setStats(data.stats);
     setPlayedAnimation(data.playedAnimation);
+    setEnableWordCheck(data.enableWordCheck);
     setDarkMode(data.darkMode);
     if (data.playedToday) setEnableInput(false);
   }
@@ -263,19 +293,21 @@ function App() {
 
   function handleGameEnd(win: boolean | null) {
     if (win === null) return;
+    let tempStats = stats;
     if (win) {
-      let dist = guessDistribution;
+      let dist = stats.guessDistribution;
       dist[Object.keys(dist)[guesses.length - 1]] += 1;
-      setGuessDistribution(dist);
-      setStreak(streak + 1);
+      tempStats.guessDistribution = dist;
+      tempStats.streak += 1;
       setWinMessage(WIN_MESSAGE[guesses.length - 1]);
     } else {
-      setLosses(losses + 1);
-      setStreak(0);
+      tempStats.losses += 1;
+      tempStats.streak = 0;
       setWinMessage(`"${DAILY_WORD.current.toUpperCase()}"`);
     }
+    tempStats.totalGames = stats.totalGames + 1;
+    setStats(tempStats);
     setWon(win);
-    setTotalGames(totalGames + 1);
     setPlayedToday(true);
     setEnableInput(false);
     setTimeout(() => {
@@ -289,16 +321,10 @@ function App() {
   function saveGame() {
     localStorage.setItem("board", JSON.stringify(board));
     localStorage.setItem("guesses", JSON.stringify(guesses));
-    localStorage.setItem("totalGames", JSON.stringify(totalGames));
-    localStorage.setItem("losses", JSON.stringify(losses));
-    localStorage.setItem("streak", JSON.stringify(streak));
-    localStorage.setItem("highestStreak", JSON.stringify(highestStreak));
-    localStorage.setItem(
-      "guessDistribution",
-      JSON.stringify(guessDistribution)
-    );
+    localStorage.setItem("stats", JSON.stringify(stats));
     localStorage.setItem("playedToday", JSON.stringify(playedToday));
     localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
+    localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }
 
@@ -333,8 +359,12 @@ function App() {
   }, [DAILY_WORD.current, zardleDay]);
 
   useEffect(() => {
-    if (streak > highestStreak) setHighestStreak(streak);
-  }, [streak]);
+    if (stats.streak > stats.highestStreak) {
+      let tempStats = stats;
+      tempStats.highestStreak = stats.streak;
+      setStats(tempStats);
+    }
+  }, [stats]);
 
   useEffect(() => {
     if (firstRender.current) saveGame();
@@ -342,13 +372,10 @@ function App() {
   }, [
     board,
     guesses,
-    totalGames,
-    losses,
-    streak,
-    highestStreak,
-    guessDistribution,
+    stats,
     playedToday,
     playedAnimation,
+    enableWordCheck,
     darkMode,
   ]);
 
@@ -380,11 +407,8 @@ function App() {
           darkMode={darkMode}
           won={won}
           guesses={guesses}
-          totalGames={totalGames}
-          winRate={calcWinRate(losses, totalGames)}
-          streak={streak}
-          highestStreak={highestStreak}
-          guessDistribution={guessDistribution}
+          stats={stats}
+          winRate={calcWinRate(stats.losses, stats.totalGames)}
           share={copyResultsClipboard}
           closeModal={closeModal}
         />
@@ -394,7 +418,15 @@ function App() {
       modal = <RulesModal closeModal={closeModal} />;
       break;
     case "options":
-      modal = <div></div>;
+      modal = (
+        <OptionsModal
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+          enableWordCheck={enableWordCheck}
+          setEnableWordCheck={setEnableWordCheck}
+          closeModal={closeModal}
+        />
+      );
       break;
     default:
       modal = <div></div>;
@@ -406,16 +438,16 @@ function App() {
       <span>
         <button onClick={() => openModal("rules")}>Rules</button>
         <button onClick={resetBoard}>Reset</button>
-        <button onClick={() => localStorage.clear()}>
-          localStorage.clear()
-        </button>
+        <button onClick={() => localStorage.clear()}>Clear data</button>
         <button onClick={() => openModal("stats")}>Stats</button>
+        <button onClick={() => openModal("options")}>Options</button>
       </span>
       <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
       <Gameboard
         board={board}
         WORD_LENGTH={WORD_LENGTH}
         currentGuess={currentGuess}
+        enableWordCheck={enableWordCheck}
         isCurrentInputValid={isCurrentInputValid}
         currentRow={currentRow}
         backspacing={backspacing}

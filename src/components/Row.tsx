@@ -7,6 +7,7 @@ interface RowProps {
   tileSize: string;
   boardRow: Array<{ symbol: string; color: string }>;
   active: boolean;
+  enableWordCheck?: boolean;
   isCurrentInputValid: boolean;
   backspacing?: boolean;
   playShake?: boolean;
@@ -18,6 +19,7 @@ const Row = ({
   tileSize,
   boardRow,
   active,
+  enableWordCheck = false,
   isCurrentInputValid,
   backspacing = false,
   playShake = false,
@@ -86,7 +88,12 @@ const Row = ({
     <div className="row">
       {boardRow.map((slot, slotIndex) => {
         // classes
-        let invalid = `${!active ? "" : isCurrentInputValid ? "" : "invalid"}`;
+        let invalid = "";
+        if (active) {
+          if (enableWordCheck) {
+            if (!isCurrentInputValid) invalid = "invalid";
+          }
+        }
         let shakeAni = `${playShake && active ? "shake" : ""}`;
         let bounceAni = `${
           flip[slotIndex] && bounce[slotIndex] ? "bounce" : ""

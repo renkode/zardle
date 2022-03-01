@@ -1,5 +1,6 @@
 {
   "name": "zardle",
+  "homepage": "http://renkode.github.io/zardle",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,17 +13,21 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-modal": "^3.13.1",
     "axios": "^0.26.0",
+    "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-card-flip": "^1.1.5",
     "react-countdown": "^2.3.2",
     "react-dom": "^17.0.2",
     "react-modal": "^3.14.4",
     "react-scripts": "5.0.0",
+    "react-switch": "^6.0.0",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
