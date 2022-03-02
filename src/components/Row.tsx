@@ -1,4 +1,4 @@
-import "../App.css";
+import "../App.scss";
 import { useState, useEffect, memo } from "react";
 import Tile from "./Tile";
 import ReactCardFlip from "react-card-flip";

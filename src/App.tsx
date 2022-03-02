@@ -1,5 +1,5 @@
-import "./App.css";
-import { useState, useEffect, useRef } from "react";
+import "./App.scss";
+import { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import Modal from "react-modal";
 import Gameboard from "./components/Gameboard";
@@ -8,6 +8,7 @@ import WinMessage from "./components/WinMessage";
 import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
 import OptionsModal from "./components/OptionsModal";
+import { DarkModeContext } from "./contexts/DarkModeProvider";
 import WORDS from "./words.json";
 
 function App() {
@@ -29,9 +30,10 @@ function App() {
     losses: 0,
     guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
   };
+  const { darkMode, setDarkMode } = useContext(DarkModeContext);
+  //const [darkMode, setDarkMode] = useState(false);
   const firstRender = useRef(false);
   const [zardleDay, setZardleDay] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
   const [hardMode, setHardMode] = useState(false);
   const [board, setBoard] = useState(
     createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
@@ -83,6 +85,7 @@ function App() {
       data[key] = JSON.parse(data[key]);
     }
     loadGame(data, true);
+    closeModal();
   }
 
   function copyResultsClipboard() {
@@ -344,6 +347,7 @@ function App() {
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
     localStorage.setItem("hardMode", JSON.stringify(darkMode));
+    console.log(darkMode);
   }
 
   Modal.setAppElement("#root");
@@ -440,8 +444,8 @@ function App() {
         <OptionsModal
           hardMode={hardMode}
           setHardMode={setHardMode}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
+          // darkMode={darkMode}
+          // setDarkMode={setDarkMode}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
           copyDataClipboard={copyDataClipboard}
@@ -456,7 +460,7 @@ function App() {
   }
 
   return (
-    <div className="App" onKeyDown={handleKeyDown} tabIndex={-1}>
+    <div className={`App`} onKeyDown={handleKeyDown} tabIndex={-1}>
       {DAILY_WORD.current}
       {zardleDay}
       <span>

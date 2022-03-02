@@ -1,12 +1,13 @@
-import "../App.css";
-import { useState, memo } from "react";
+import "../App.scss";
+import { useState, useContext, memo } from "react";
+import { DarkModeContext } from "../contexts/DarkModeProvider";
 import Switch from "react-switch";
 
 interface OptionsModalProps {
   hardMode: boolean;
   setHardMode(bool: boolean): void;
-  darkMode: boolean;
-  setDarkMode(bool: boolean): void;
+  // darkMode: boolean;
+  // setDarkMode(bool: boolean): void;
   enableWordCheck: boolean;
   setEnableWordCheck(bool: boolean): void;
   copyDataClipboard(): void;
@@ -18,8 +19,8 @@ interface OptionsModalProps {
 const OptionsModal = ({
   hardMode,
   setHardMode,
-  darkMode,
-  setDarkMode,
+  // darkMode,
+  // setDarkMode,
   enableWordCheck,
   setEnableWordCheck,
   copyDataClipboard,
@@ -32,6 +33,7 @@ const OptionsModal = ({
   const HANDLE_DIAMETER = HEIGHT - 4;
   const ON_COLOR = "#80bb34";
   const [importText, setImportText] = useState("");
+  const { darkMode, setDarkMode } = useContext(DarkModeContext);
 
   return (
     <div className="options-modal">

@@ -1,3 +1,23 @@
+@import-normalize; /* bring in normalize.css styles */
+$green: #80bb34;
+$green-hover: #57af2f;
+$yellow: #ddb917;
+$yellow-hover: #d19e11;
+$gray: #919292;
+$gray-hover: #828383;
+$red: #e64242;
+$red-hover: #ca3434;
+$divider: #c2c2c2;
+$win-message: #cdd0d1;
+$key-color: #cdd0d1;
+$key-hover-color: #aeb0b1;
+$tile-color: #bfc1c2;
+
+$light-mode-text: rgb(27, 27, 27);
+$light-mode-bg: rgb(255, 255, 255);
+$dark-mode-text: rgb(226, 226, 226);
+$dark-mode-bg: rgb(32, 32, 32);
+
 .App {
   margin: auto;
   margin-top: 40px;
@@ -82,7 +102,7 @@
   width: 70px;
   height: 70px;
   margin: 0px 4px 8px 4px;
-  border: 2px solid #bfc1c2;
+  border: 2px solid $tile-color;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -109,7 +129,7 @@
   width: 50px;
   height: 70px;
   margin: 3px;
-  background-color: #cdd0d1;
+  background-color: $key-color;
   border-radius: 10%;
   display: flex;
   justify-content: center;
@@ -121,46 +141,42 @@
 }
 
 .key:hover {
-  background: #aeb0b1;
+  background: $key-hover-color;
 }
 
 .green {
-  border: 2px solid #80bb34;
-  background: #80bb34;
+  border: 2px solid $green;
+  background: $green;
   color: white;
   border: 0px;
 }
 
 .yellow {
-  border: 2px solid #ddb917;
-  background: #ddb917;
+  border: 2px solid $yellow;
+  background: $yellow;
   color: white;
   border: 0px;
 }
 
 .gray {
-  border: 2px solid #919292;
-  background: #919292;
+  border: 2px solid $gray;
+  background: $gray;
   color: white;
   border: 0px;
 }
 
 .key.green:hover,
 .copy-btn:hover {
-  background: #57af2f;
+  background: $green-hover;
 }
 
 .key.yellow:hover,
 .import-btn:hover {
-  background: #d19e11;
-}
-
-.reset-btn:hover {
-  background: #ca3434;
+  background: $yellow-hover;
 }
 
 .key.gray:hover {
-  background: #828383;
+  background: $gray-hover;
 }
 
 .stats-modal {
@@ -226,6 +242,7 @@ h3 {
   justify-content: flex-start;
   align-items: center;
   width: 25%;
+  margin: 8% auto;
 }
 
 .stat {
@@ -245,7 +262,13 @@ h3 {
 .bar-wrapper {
   display: flex;
   flex-direction: row;
+  justify-items: space-between;
+  align-items: center;
   margin: 3px 0;
+}
+
+.bar-label {
+  width: 12px;
 }
 
 .bar {
@@ -253,11 +276,14 @@ h3 {
   background-color: gray;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   padding: 0px 6px;
   margin-left: 4px;
   line-height: 120%;
   box-sizing: border-box;
   min-width: 5%;
+  font-size: 1rem;
+  height: 1.2rem;
 }
 
 .countdown-share-wrapper {
@@ -270,7 +296,7 @@ h3 {
 }
 
 .countdown-container {
-  border-right: 1px solid gray;
+  border-right: 1px solid $divider;
 }
 
 .countdown-container,
@@ -294,14 +320,14 @@ h3 {
   height: 50%;
   font-size: 1.5rem;
   border: 0px;
-  background-color: #80bb34;
+  background-color: $green;
   cursor: pointer;
   transition-duration: 0.1s;
   border-radius: 4px;
 }
 
 .share:hover {
-  background: #57af2f;
+  background: $green-hover;
 }
 
 .win-message {
@@ -311,7 +337,7 @@ h3 {
   margin: 1rem;
   justify-content: center;
   align-items: center;
-  background-color: #cdd0d1;
+  background-color: $win-message;
   font-weight: bold;
 }
 
@@ -331,7 +357,7 @@ h3 {
 
 hr {
   width: 100%;
-  background-color: #c2c2c2;
+  background-color: $divider;
   border: 0px;
   height: 1px;
 }
@@ -386,13 +412,17 @@ textarea {
 }
 
 .copy-btn {
-  background-color: #80bb34;
+  background-color: $green;
 }
 
 .import-btn {
-  background-color: #ddb917;
+  background-color: $yellow;
 }
 
 .reset-btn {
-  background-color: rgb(230, 66, 66);
+  background-color: $red;
+}
+
+.reset-btn:hover {
+  background: $red-hover;
 }

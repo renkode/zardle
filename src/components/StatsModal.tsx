@@ -1,4 +1,4 @@
-import "../App.css";
+import "../App.scss";
 import { memo } from "react";
 import Countdown from "react-countdown";
 
@@ -39,6 +39,44 @@ const StatsModal = ({
     return Math.round((num / total) * 100);
   };
 
+  function iOS() {
+    return (
+      [
+        "iPad Simulator",
+        "iPhone Simulator",
+        "iPod Simulator",
+        "iPad",
+        "iPhone",
+        "iPod",
+      ].includes(navigator.platform) ||
+      // iPad on iOS 13 detection
+      (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    );
+  }
+
+  function convertDateForIos(date: string) {
+    let newDate;
+    var arr = date.split(/[- :]/);
+    const arrNums = arr.map((e: any) => parseInt(e));
+    console.log(arrNums);
+    newDate = new Date(
+      arrNums[0],
+      arrNums[1] - 1,
+      arrNums[2],
+      arrNums[3],
+      arrNums[4],
+      arrNums[5]
+    );
+    return newDate;
+  }
+
+  // timer until tomorrow at 9 PM PST
+  let date = new Date();
+  let time = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1, 5)
+  );
+  if (time.getTime() - Date.now() <= 0) time.setDate(date.getDate() + 2);
+
   return (
     <div className="stats-modal">
       <div className="close-btn" onClick={closeModal}>
@@ -78,7 +116,7 @@ const StatsModal = ({
           }
           return (
             <div className="bar-wrapper" key={i}>
-              {i + 1}
+              <div className="bar-label">{i + 1}</div>
               <div
                 className="bar"
                 style={{ width: `${barWidth}%`, backgroundColor: `${bgColor}` }}
@@ -92,17 +130,7 @@ const StatsModal = ({
       <div className="countdown-share-wrapper">
         <div className="countdown-container">
           <span>NEXT ZARDLE</span>
-          <Countdown
-            className="countdown"
-            date={
-              new Date(
-                `${
-                  new Date().getMonth() + 1
-                }/${new Date().getDate()}/${new Date().getFullYear()} 9: PM PST`
-              )
-            }
-            daysInHours={true}
-          />
+          <Countdown className="countdown" date={time} daysInHours={true} />
         </div>
         <div className="share-container">
           <button className="share" onClick={share}>
