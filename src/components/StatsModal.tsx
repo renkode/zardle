@@ -3,7 +3,6 @@ import { memo } from "react";
 import Countdown from "react-countdown";
 
 interface StatsModalProps {
-  darkMode: boolean;
   won: boolean | null;
   guesses: Array<string>;
   winRate: number;
@@ -19,7 +18,6 @@ interface StatsModalProps {
 }
 
 const StatsModal = ({
-  darkMode,
   won,
   guesses,
   winRate,
@@ -39,43 +37,12 @@ const StatsModal = ({
     return Math.round((num / total) * 100);
   };
 
-  function iOS() {
-    return (
-      [
-        "iPad Simulator",
-        "iPhone Simulator",
-        "iPod Simulator",
-        "iPad",
-        "iPhone",
-        "iPod",
-      ].includes(navigator.platform) ||
-      // iPad on iOS 13 detection
-      (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-    );
-  }
-
-  function convertDateForIos(date: string) {
-    let newDate;
-    var arr = date.split(/[- :]/);
-    const arrNums = arr.map((e: any) => parseInt(e));
-    console.log(arrNums);
-    newDate = new Date(
-      arrNums[0],
-      arrNums[1] - 1,
-      arrNums[2],
-      arrNums[3],
-      arrNums[4],
-      arrNums[5]
-    );
-    return newDate;
-  }
-
   // timer until tomorrow at 9 PM PST
   let date = new Date();
   let time = new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1, 5)
   );
-  if (time.getTime() - Date.now() <= 0) time.setDate(date.getDate() + 2);
+  if (time.getTime() - Date.now() <= 0) time.setDate(date.getDate() + 1.5); // ????
 
   return (
     <div className="stats-modal">
@@ -110,9 +77,9 @@ const StatsModal = ({
           let count = stats.guessDistribution[key];
           let max = findMaxFromDistribution();
           let barWidth = getBarWidth(count, max);
-          let bgColor = "gray";
+          let bgColor = "";
           if (won) {
-            if (guesses.length === i + 1) bgColor = "rgb(128, 187, 52)";
+            if (guesses.length === i + 1) bgColor = "#80bb34";
           }
           return (
             <div className="bar-wrapper" key={i}>

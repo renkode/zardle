@@ -1,5 +1,6 @@
 import "../App.scss";
-import { memo } from "react";
+import { memo, useContext } from "react";
+import { DarkModeContext } from "../contexts/DarkModeProvider";
 
 interface TileProps {
   tileSize: string;
@@ -8,9 +9,10 @@ interface TileProps {
 }
 
 const Tile = ({ tileSize, letter, color = "" }: TileProps) => {
+  const { darkMode } = useContext(DarkModeContext);
   return (
     <div
-      className={`tile ${color}`}
+      className={`tile ${color}${darkMode ? " --tile-dark-mode" : ""}`}
       style={{ width: `${tileSize}`, height: `${tileSize}` }}
     >
       {letter}

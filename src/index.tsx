@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import DarkModeProvider, { DarkModeContext } from "./contexts/DarkModeProvider";
+import DarkModeProvider from "./contexts/DarkModeProvider";
 
 declare global {
   interface Window {

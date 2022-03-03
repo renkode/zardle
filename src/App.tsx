@@ -31,8 +31,8 @@ function App() {
     guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
   };
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
-  //const [darkMode, setDarkMode] = useState(false);
   const firstRender = useRef(false);
+
   const [zardleDay, setZardleDay] = useState(0);
   const [hardMode, setHardMode] = useState(false);
   const [board, setBoard] = useState(
@@ -347,7 +347,6 @@ function App() {
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
     localStorage.setItem("hardMode", JSON.stringify(darkMode));
-    console.log(darkMode);
   }
 
   Modal.setAppElement("#root");
@@ -411,13 +410,20 @@ function App() {
   }, [currentGuess]);
 
   const modalStyle = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+    },
     content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
+      // top: "50%",
+      // left: "50%",
+      // right: "auto",
+      // bottom: "auto",
+      // transform: "translate(-50%, -50%)",
       width: "500px",
+      height: "fit-content",
+      margin: "auto",
+      padding: "0",
+      border: "0",
     },
   };
 
@@ -426,7 +432,6 @@ function App() {
     case "stats":
       modal = (
         <StatsModal
-          darkMode={darkMode}
           won={won}
           guesses={guesses}
           stats={stats}
@@ -444,8 +449,6 @@ function App() {
         <OptionsModal
           hardMode={hardMode}
           setHardMode={setHardMode}
-          // darkMode={darkMode}
-          // setDarkMode={setDarkMode}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
           copyDataClipboard={copyDataClipboard}
@@ -460,40 +463,68 @@ function App() {
   }
 
   return (
-    <div className={`App`} onKeyDown={handleKeyDown} tabIndex={-1}>
+    <div
+      className={`App${darkMode ? " --dark-mode" : ""}`}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      <div className="nav-bar">
+        <div className="nav-btn-container-left">
+          <button
+            className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
+            onClick={() => openModal("rules")}
+          >
+            <i className="fa-regular fa-circle-question"></i>
+          </button>
+        </div>
+        <div className="title">Zardle</div>
+        <div className="nav-btn-container-right">
+          <button onClick={resetBoard}>Reset</button>
+          <button
+            className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
+            onClick={() => openModal("stats")}
+          >
+            <i className="fa-solid fa-chart-column" />
+          </button>
+          <button
+            className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
+            onClick={() => openModal("options")}
+          >
+            <i className="fa-solid fa-gear" />
+          </button>
+        </div>
+      </div>
       {DAILY_WORD.current}
       {zardleDay}
-      <span>
-        <button onClick={() => openModal("rules")}>Rules</button>
-        <button onClick={resetBoard}>Reset</button>
-        <button onClick={() => resetBoard()}>Clear data</button>
-        <button onClick={() => openModal("stats")}>Stats</button>
-        <button onClick={() => openModal("options")}>Options</button>
-      </span>
-      <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
-      <Gameboard
-        board={board}
-        WORD_LENGTH={WORD_LENGTH}
-        currentGuess={currentGuess}
-        enableWordCheck={enableWordCheck}
-        isCurrentInputValid={isCurrentInputValid}
-        currentRow={currentRow}
-        backspacing={backspacing}
-        playShake={playShake}
-        playedAnimation={playedAnimation}
-        setPlayedAnimation={setPlayedAnimation}
-      />
-      <Keyboard
-        lastRow={board[currentRow - 1]}
-        handleKeyDown={handleKeyDown}
-        guesses={guesses}
-      />
+
+      <div className={`game${darkMode ? " --dark-mode" : ""}`}>
+        <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
+        <Gameboard
+          board={board}
+          WORD_LENGTH={WORD_LENGTH}
+          currentGuess={currentGuess}
+          enableWordCheck={enableWordCheck}
+          isCurrentInputValid={isCurrentInputValid}
+          currentRow={currentRow}
+          backspacing={backspacing}
+          playShake={playShake}
+          playedAnimation={playedAnimation}
+          setPlayedAnimation={setPlayedAnimation}
+        />
+        <Keyboard
+          lastRow={board[currentRow - 1]}
+          handleKeyDown={handleKeyDown}
+          guesses={guesses}
+        />
+      </div>
+
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Statistics"
         style={modalStyle}
-        closeTimeoutMS={140}
+        closeTimeoutMS={145}
+        className={`${darkMode ? "--modal-dark-mode" : ""}`}
       >
         {modal}
       </Modal>

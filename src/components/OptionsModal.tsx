@@ -129,7 +129,7 @@ const OptionsModal = ({
 
       <hr />
 
-      <div className="option-container">
+      <div className="option-container" style={{ marginBottom: "5%" }}>
         <div className="label-container">
           <span className="option-label">Reset Data</span>
         </div>
