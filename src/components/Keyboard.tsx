@@ -1,8 +1,7 @@
 import "../App.scss";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useContext, memo } from "react";
+import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 import KeyButton from "./KeyButton";
-
-//check if a-z key is included in board
 
 interface KeyboardProps {
   lastRow: Array<{ symbol: string; color: string }>;
@@ -16,6 +15,7 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
     ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
     ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
   ];
+  const { contrastMode } = useContext(ContrastModeContext);
   const [greens, setGreens] = useState<Array<string>>([]);
   const [yellows, setYellows] = useState<Array<string>>([]);
   const [grays, setGrays] = useState<Array<string>>([]);
@@ -24,7 +24,8 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
     let greenArr = greens;
     lastRow.forEach((tile) => {
       if (greens.includes(tile.symbol)) return;
-      if (tile.color === "green") greenArr.push(tile.symbol);
+      if (tile.color === "green" || tile.color === "orange")
+        greenArr.push(tile.symbol);
     });
     return greenArr;
   };
@@ -33,7 +34,8 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
     let yellowArr = yellows;
     lastRow.forEach((tile) => {
       if (yellows.includes(tile.symbol)) return;
-      if (tile.color === "yellow") yellowArr.push(tile.symbol);
+      if (tile.color === "yellow" || tile.color === "blue")
+        yellowArr.push(tile.symbol);
     });
     return yellowArr.filter((y) => !greens.includes(y));
   };
@@ -75,9 +77,9 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[0].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
-            color = "green";
+            contrastMode ? (color = "orange") : (color = "green");
           } else if (yellows.some((y) => y === symbol)) {
-            color = "yellow";
+            contrastMode ? (color = "blue") : (color = "yellow");
           } else if (grays.some((g) => g === symbol)) {
             color = "gray";
           }
@@ -96,9 +98,9 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[1].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
-            color = "green";
+            contrastMode ? (color = "orange") : (color = "green");
           } else if (yellows.some((y) => y === symbol)) {
-            color = "yellow";
+            contrastMode ? (color = "blue") : (color = "yellow");
           } else if (grays.some((g) => g === symbol)) {
             color = "gray";
           }
@@ -117,9 +119,9 @@ const Keyboard = ({ lastRow, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[2].map((symbol, index) => {
           let color = "";
           if (greens.some((g) => g === symbol)) {
-            color = "green";
+            contrastMode ? (color = "orange") : (color = "green");
           } else if (yellows.some((y) => y === symbol)) {
-            color = "yellow";
+            contrastMode ? (color = "blue") : (color = "yellow");
           } else if (grays.some((g) => g === symbol)) {
             color = "gray";
           }

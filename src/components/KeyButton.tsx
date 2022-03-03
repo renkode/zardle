@@ -8,15 +8,19 @@ interface KeyButtonProps {
 }
 
 const KeyButton = ({ symbol, color, handleKeyDown }: KeyButtonProps) => {
-  let width = "50px";
-  if (symbol.length > 1) width = "79px";
+  let width = "4.5vh";
+  if (symbol.length > 1) width = `calc(${width}*1.6)`;
   return (
     <div
       className={`key ${color}`}
       style={{ width: `${width}` }}
       onClick={() => handleKeyDown(null, symbol)}
     >
-      {symbol === "backspace" ? "BKSP" : symbol.toUpperCase()}
+      {symbol === "backspace" ? (
+        <i className="fa-solid fa-delete-left"></i>
+      ) : (
+        symbol.toUpperCase()
+      )}
     </div>
   );
 };

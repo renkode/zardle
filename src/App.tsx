@@ -9,6 +9,7 @@ import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
 import OptionsModal from "./components/OptionsModal";
 import { DarkModeContext } from "./contexts/DarkModeProvider";
+import { ContrastModeContext } from "./contexts/ContrastModeProvider";
 import WORDS from "./words.json";
 
 function App() {
@@ -31,8 +32,8 @@ function App() {
     guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
   };
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
+  const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
   const firstRender = useRef(false);
-
   const [zardleDay, setZardleDay] = useState(0);
   const [hardMode, setHardMode] = useState(false);
   const [board, setBoard] = useState(
@@ -50,7 +51,6 @@ function App() {
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("stats");
-
   const [stats, setStats] = useState<{
     totalGames: number;
     streak: number;
@@ -61,6 +61,8 @@ function App() {
   const [playedToday, setPlayedToday] = useState(false);
   const [won, setWon] = useState<boolean | null>(null);
   const [backspacing, setBackspacing] = useState(false);
+
+  //=======================================================================
 
   async function fetchdailyWord() {
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -105,6 +107,12 @@ function App() {
             break;
           case tile.color === "yellow":
             square = "🟨";
+            break;
+          case tile.color === "orange":
+            square = "🟧";
+            break;
+          case tile.color === "blue":
+            square = "🟦";
             break;
           case tile.color === "gray" && darkMode:
             square = "⬛";
@@ -198,6 +206,7 @@ function App() {
     setPlayedAnimation(data.playedAnimation || false);
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
+    setContrastMode(data.contrastMode || false);
     setHardMode(data.hardMode || false);
     if (data.playedToday) setEnableInput(false);
   }
@@ -259,43 +268,45 @@ function App() {
 
   function setCurrentRowColors() {
     let newBoard = board;
-    let yellowArr: Array<{ symbol: string; index: number }> = [];
-    let greenArr: Array<{ symbol: string; index: number }> = [];
+    let correctLetters: Array<{ symbol: string; index: number }> = [];
+    let wrongSpotLetters: Array<{ symbol: string; index: number }> = [];
 
     newBoard[currentRow].forEach((tile, index) => {
       const letter = tile.symbol;
       if (letter.length === 0) return;
       // assign letters to colored array
       if (letter === DAILY_WORD.current[index]) {
-        greenArr.push({ symbol: letter, index: index });
+        correctLetters.push({ symbol: letter, index: index });
       } else if (DAILY_WORD.current.includes(letter)) {
         // skip if already in array
-        if (yellowArr.some((y) => y.symbol === letter && y.index === index))
+        if (
+          wrongSpotLetters.some((y) => y.symbol === letter && y.index === index)
+        )
           return;
         // yellows should not exceed max occurrences of a letter
         if (
-          yellowArr.filter((y) => y.symbol === letter).length +
-            greenArr.filter((g) => g.symbol === letter).length >=
+          wrongSpotLetters.filter((y) => y.symbol === letter).length +
+            correctLetters.filter((g) => g.symbol === letter).length >=
           countLetter(DAILY_WORD.current, letter)
         )
           return;
-        yellowArr.push({ symbol: letter, index: index });
+        wrongSpotLetters.push({ symbol: letter, index: index });
       }
       // remove previous yellows if all greens are found later in input
       // e.g. for "APPLE", the first P in "PPP__" will flip back to gray after 3rd input
       if (
-        greenArr.filter((g) => g.symbol === letter).length ===
+        correctLetters.filter((g) => g.symbol === letter).length ===
         countLetter(DAILY_WORD.current, letter)
       )
-        yellowArr = yellowArr.filter((y) => y.symbol !== letter);
+        wrongSpotLetters = wrongSpotLetters.filter((y) => y.symbol !== letter);
     });
 
     // actually change colors
     newBoard[currentRow].forEach((tile, index) => {
-      if (yellowArr.some((y) => y.index === index)) {
-        tile.color = "yellow";
-      } else if (greenArr.some((g) => g.index === index)) {
-        tile.color = "green";
+      if (wrongSpotLetters.some((y) => y.index === index)) {
+        contrastMode ? (tile.color = "blue") : (tile.color = "yellow");
+      } else if (correctLetters.some((g) => g.index === index)) {
+        contrastMode ? (tile.color = "orange") : (tile.color = "green");
       } else {
         tile.color = "gray";
       }
@@ -349,10 +360,30 @@ function App() {
     localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    localStorage.setItem("contrastMode", JSON.stringify(contrastMode));
     localStorage.setItem("hardMode", JSON.stringify(darkMode));
   }
 
-  Modal.setAppElement("#root");
+  function swapToContrastColors(bool: boolean) {
+    let newBoard = board;
+    if (bool) {
+      newBoard.forEach((row) =>
+        row.forEach((tile) => {
+          if (tile.color === "green") tile.color = "orange";
+          if (tile.color === "yellow") tile.color = "blue";
+        })
+      );
+    } else {
+      newBoard.forEach((row) =>
+        row.forEach((tile) => {
+          if (tile.color === "orange") tile.color = "green";
+          if (tile.color === "blue") tile.color = "yellow";
+        })
+      );
+    }
+    console.log(newBoard);
+    setBoard(newBoard);
+  }
 
   function openModal(type: string) {
     setModalType(type);
@@ -365,6 +396,8 @@ function App() {
     setIsOpen(false);
     setEnableInput(true);
   }
+
+  //=======================================================================
 
   useEffect(() => {
     fetchdailyWord();
@@ -401,6 +434,7 @@ function App() {
     playedAnimation,
     enableWordCheck,
     darkMode,
+    contrastMode,
   ]);
 
   useEffect(() => {
@@ -412,30 +446,33 @@ function App() {
     setIsCurrentInputValid(isValid);
   }, [currentGuess]);
 
-  // useEffect(() => {
-  //   if (!firstRender.current) return;
-  //   if (darkMode) {
-  //     document.body.classList.add("--dark-mode");
-  //   } else {
-  //     document.body.classList.remove("--dark-mode");
-  //   }
-  // }, [darkMode]);
+  //=======================================================================
 
-  const modalStyle = {
+  Modal.setAppElement("#root");
+
+  const modalLightMode = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.3)",
     },
     content: {
-      // top: "50%",
-      // left: "50%",
-      // right: "auto",
-      // bottom: "auto",
-      // transform: "translate(-50%, -50%)",
-      width: "500px",
-      height: "fit-content",
-      margin: "auto",
       padding: "0",
       border: "0",
+      inset: "0",
+      color: "#383838",
+      backgroundColor: "#ffffff",
+    },
+  };
+
+  const modalDarkMode = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+    },
+    content: {
+      padding: "0",
+      border: "0",
+      inset: "0",
+      color: "#ffffff",
+      backgroundColor: "#202020",
     },
   };
 
@@ -461,6 +498,7 @@ function App() {
         <OptionsModal
           hardMode={hardMode}
           setHardMode={setHardMode}
+          swapToContrastColors={swapToContrastColors}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
           copyDataClipboard={copyDataClipboard}
@@ -490,7 +528,7 @@ function App() {
           </button>
         </div>
         <div className={`title${darkMode ? " --title-dark-mode" : ""}`}>
-          Zardle
+          ZARDLE
         </div>
         <div className="nav-btn-container-right">
           <button onClick={resetBoard}>Reset</button>
@@ -508,8 +546,8 @@ function App() {
           </button>
         </div>
       </div>
-      {DAILY_WORD.current}
-      {zardleDay}
+      {/* {DAILY_WORD.current}
+      {zardleDay} */}
 
       <div className={`game${darkMode ? " --dark-mode" : ""}`}>
         <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
@@ -536,9 +574,8 @@ function App() {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Statistics"
-        style={modalStyle}
+        style={darkMode ? modalDarkMode : modalLightMode}
         closeTimeoutMS={145}
-        className={`${darkMode ? "--modal-dark-mode" : ""}`}
       >
         {modal}
       </Modal>

@@ -1,14 +1,25 @@
 import "../App.scss";
-import { memo } from "react";
+import { memo, useContext } from "react";
 import Row from "./Row";
+import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 
 interface RulesModalProps {
   closeModal(): void;
 }
 
 const RulesModal = ({ closeModal }: RulesModalProps) => {
+  const { contrastMode } = useContext(ContrastModeContext);
+  let CORRECT_COLOR;
+  let WRONG_SPOT_COLOR;
+  if (contrastMode) {
+    CORRECT_COLOR = "orange";
+    WRONG_SPOT_COLOR = "blue";
+  } else {
+    CORRECT_COLOR = "green";
+    WRONG_SPOT_COLOR = "yellow";
+  }
   const WEARY = [
-    { symbol: "w", color: "green" },
+    { symbol: "w", color: CORRECT_COLOR },
     { symbol: "e", color: "" },
     { symbol: "a", color: "" },
     { symbol: "r", color: "" },
@@ -16,7 +27,7 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
   ];
   const PILLS = [
     { symbol: "P", color: "" },
-    { symbol: "i", color: "yellow" },
+    { symbol: "i", color: WRONG_SPOT_COLOR },
     { symbol: "l", color: "" },
     { symbol: "l", color: "" },
     { symbol: "s", color: "" },
@@ -28,12 +39,17 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
     { symbol: "u", color: "gray" },
     { symbol: "e", color: "" },
   ];
+  const TILE_SIZE = "50px";
+  const FONT_SIZE = "30px";
+
   return (
     <div className="rules-modal">
-      <div className="close-btn" onClick={closeModal}>
-        X
+      <div className="modal-header">
+        <h3>HOW TO PLAY</h3>
+        <span className="close-btn" onClick={closeModal}>
+          <i className="fa-solid fa-x"></i>
+        </span>
       </div>
-      <h3>HOW TO PLAY</h3>
       <p>
         Guess the <b>ZARDLE</b> in six tries.
       </p>
@@ -49,7 +65,8 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
       <div>
         <h4>EXAMPLES</h4>
         <Row
-          tileSize="50px"
+          tileSize={TILE_SIZE}
+          fontSize={FONT_SIZE}
           boardRow={WEARY}
           isCurrentInputValid={true}
           active={false}
@@ -59,7 +76,8 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
         </p>
 
         <Row
-          tileSize="50px"
+          tileSize={TILE_SIZE}
+          fontSize={FONT_SIZE}
           boardRow={PILLS}
           isCurrentInputValid={true}
           active={false}
@@ -69,7 +87,8 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
         </p>
 
         <Row
-          tileSize="50px"
+          tileSize={TILE_SIZE}
+          fontSize={FONT_SIZE}
           boardRow={VAGUE}
           isCurrentInputValid={true}
           active={false}

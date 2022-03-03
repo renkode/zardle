@@ -40,7 +40,7 @@ const Gameboard = ({
       {board.map((row, rowIndex) => (
         <Row
           key={rowIndex}
-          tileSize={"70px"}
+          tileSize={"min(70px, 16vw, 8vh)"}
           boardRow={rowIndex === currentRow ? rowInput : row}
           enableWordCheck={enableWordCheck}
           isCurrentInputValid={isCurrentInputValid}
@@ -55,4 +55,4 @@ const Gameboard = ({
   );
 };
 
-export default memo(Gameboard);
+export default Gameboard;

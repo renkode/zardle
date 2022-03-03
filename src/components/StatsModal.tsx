@@ -1,6 +1,7 @@
 import "../App.scss";
-import { memo } from "react";
+import { memo, useContext } from "react";
 import Countdown from "react-countdown";
+import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 
 interface StatsModalProps {
   won: boolean | null;
@@ -25,6 +26,7 @@ const StatsModal = ({
   share,
   closeModal,
 }: StatsModalProps) => {
+  const { contrastMode } = useContext(ContrastModeContext);
   const findMaxFromDistribution = () => {
     let arr: Array<number> = [];
     Object.keys(stats.guessDistribution).map((key) =>
@@ -46,10 +48,13 @@ const StatsModal = ({
 
   return (
     <div className="stats-modal">
-      <div className="close-btn" onClick={closeModal}>
-        X
+      <div className="modal-header">
+        <h3>STATISTICS</h3>
+        <span className="close-btn" onClick={closeModal}>
+          <i className="fa-solid fa-x"></i>
+        </span>
       </div>
-      <h3>STATISTICS</h3>
+
       <div className="stats-wrapper">
         <div className="stat-container">
           <span className="stat">{stats.totalGames}</span>
@@ -77,16 +82,18 @@ const StatsModal = ({
           let count = stats.guessDistribution[key];
           let max = findMaxFromDistribution();
           let barWidth = getBarWidth(count, max);
-          let bgColor = "";
+          let bgColor = "gray";
           if (won) {
-            if (guesses.length === i + 1) bgColor = "#80bb34";
+            if (guesses.length === i + 1) {
+              contrastMode ? (bgColor = "orange") : (bgColor = "green");
+            }
           }
           return (
             <div className="bar-wrapper" key={i}>
               <div className="bar-label">{i + 1}</div>
               <div
-                className="bar"
-                style={{ width: `${barWidth}%`, backgroundColor: `${bgColor}` }}
+                className={`bar ${bgColor}`}
+                style={{ width: `${barWidth}%` }}
               >
                 {count}
               </div>
@@ -100,8 +107,11 @@ const StatsModal = ({
           <Countdown className="countdown" date={time} daysInHours={true} />
         </div>
         <div className="share-container">
-          <button className="share" onClick={share}>
-            SHARE
+          <button
+            className={`share ${contrastMode ? "orange" : "green"}`}
+            onClick={share}
+          >
+            SHARE <i className="fa-solid fa-share-nodes"></i>
           </button>
         </div>
       </div>

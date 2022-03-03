@@ -5,6 +5,7 @@ import ReactCardFlip from "react-card-flip";
 
 interface RowProps {
   tileSize: string;
+  fontSize?: string;
   boardRow: Array<{ symbol: string; color: string }>;
   active: boolean;
   enableWordCheck?: boolean;
@@ -17,6 +18,7 @@ interface RowProps {
 
 const Row = ({
   tileSize,
+  fontSize,
   boardRow,
   active,
   enableWordCheck = false,
@@ -67,7 +69,12 @@ const Row = ({
       }, TIME_STAGGER);
     }
     // do bounce animation only after tile is flipped
-    if (!playedAnimation && boardRow.every((tile) => tile.color === "green")) {
+    if (
+      !playedAnimation &&
+      boardRow.every(
+        (tile) => tile.color === "green" || tile.color === "orange"
+      )
+    ) {
       if (flip[count]) {
         setTimeout(() => {
           bounceTile(count);
@@ -117,11 +124,13 @@ const Row = ({
           >
             <Tile
               tileSize={tileSize}
+              fontSize={fontSize}
               letter={slot.symbol.toUpperCase()}
               color={invalid}
             />
             <Tile
               tileSize={tileSize}
+              fontSize={fontSize}
               letter={slot.symbol.toUpperCase()}
               color={slot.color}
             />
@@ -132,4 +141,4 @@ const Row = ({
   );
 };
 
-export default memo(Row);
+export default Row;

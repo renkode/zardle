@@ -1,13 +1,13 @@
 import "../App.scss";
 import { useState, useContext, memo } from "react";
 import { DarkModeContext } from "../contexts/DarkModeProvider";
+import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 import Switch from "react-switch";
 
 interface OptionsModalProps {
   hardMode: boolean;
   setHardMode(bool: boolean): void;
-  // darkMode: boolean;
-  // setDarkMode(bool: boolean): void;
+  swapToContrastColors(bool: boolean): void;
   enableWordCheck: boolean;
   setEnableWordCheck(bool: boolean): void;
   copyDataClipboard(): void;
@@ -19,8 +19,7 @@ interface OptionsModalProps {
 const OptionsModal = ({
   hardMode,
   setHardMode,
-  // darkMode,
-  // setDarkMode,
+  swapToContrastColors,
   enableWordCheck,
   setEnableWordCheck,
   copyDataClipboard,
@@ -31,9 +30,11 @@ const OptionsModal = ({
   const HEIGHT = 22;
   const WIDTH = 36;
   const HANDLE_DIAMETER = HEIGHT - 4;
-  const ON_COLOR = "#80bb34";
   const [importText, setImportText] = useState("");
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
+  const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
+  let ON_COLOR; //;
+  contrastMode ? (ON_COLOR = "#ff7b23") : (ON_COLOR = "#2fbe9b");
 
   const toggleBodyDarkMode = (bool: boolean) => {
     bool
@@ -42,17 +43,25 @@ const OptionsModal = ({
     setDarkMode(bool);
   };
 
+  const toggleContrastMode = (bool: boolean) => {
+    setContrastMode(bool);
+    swapToContrastColors(bool);
+  };
+
   return (
     <div className="options-modal">
-      <div className="close-btn" onClick={closeModal}>
-        X
+      <div className="modal-header">
+        <h3>SETTINGS</h3>
+        <span className="close-btn" onClick={closeModal}>
+          <i className="fa-solid fa-x"></i>
+        </span>
       </div>
-      <h3>SETTINGS</h3>
+
       <div className="option-container">
         <div className="label-container">
           <span className="option-label">Hard Mode</span>
           <span className="option-description">
-            Any revealed hints must be used in subsequent guesses.
+            Any revealed hints must be used in subsequent guesses
           </span>
         </div>
         <Switch
@@ -87,9 +96,28 @@ const OptionsModal = ({
 
       <div className="option-container">
         <div className="label-container">
+          <span className="option-label">High Contrast Mode</span>
+          <span className="option-description">For improved color vision</span>
+        </div>
+        <Switch
+          onChange={toggleContrastMode}
+          checked={contrastMode}
+          height={HEIGHT}
+          width={WIDTH}
+          handleDiameter={HANDLE_DIAMETER}
+          onColor={ON_COLOR}
+          checkedIcon={false}
+          uncheckedIcon={false}
+        />
+      </div>
+
+      <hr />
+
+      <div className="option-container">
+        <div className="label-container">
           <span className="option-label">Visual Word Check</span>
           <span className="option-description">
-            Glows red if your current guess is not a valid word.
+            Indicates if your current guess is not a valid word
           </span>
         </div>
         <Switch
@@ -110,7 +138,10 @@ const OptionsModal = ({
         <div className="label-container">
           <span className="option-label">Export Data</span>
         </div>
-        <button className="copy-btn" onClick={copyDataClipboard}>
+        <button
+          className={`copy-btn ${contrastMode ? "orange" : "green"}`}
+          onClick={copyDataClipboard}
+        >
           Copy
         </button>
       </div>
@@ -129,7 +160,10 @@ const OptionsModal = ({
           onChange={(e) => setImportText(e.target.value)}
           rows={4}
         />
-        <button className="import-btn" onClick={() => importData(importText)}>
+        <button
+          className={`import-btn ${contrastMode ? "blue" : "yellow"}`}
+          onClick={() => importData(importText)}
+        >
           Import
         </button>
       </div>

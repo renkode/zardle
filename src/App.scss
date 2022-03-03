@@ -1,14 +1,18 @@
 @import-normalize; /* bring in normalize.css styles */
-$green: #80bb34;
-$green-hover: #5caa38;
+$green: #2fbe9b;
+$green-hover: #1ea896;
 $yellow: #ddb917;
 $yellow-hover: #d19e11;
-$gray: #686a6b7a;
-$gray-hover: #686a6b7a;
+$orange: #ff7b23;
+$orange-hover: #d65b13;
+$blue: #57b1ee;
+$blue-hover: #3a8fd4;
+$gray: #686a6ba2;
+$gray-hover: #545657a2;
 $red: #e64242;
 $red-hover: #ca3434;
 $divider: #9493936e;
-$win-message: #7979799d;
+$win-message: #ffffff;
 $key-color: #cdd0d181;
 $key-hover-color: #aeb0b181;
 $tile-color: #a4a6a779;
@@ -16,7 +20,7 @@ $bar-color: #828485cc;
 
 $light-mode-text: #383838;
 $light-mode-bg: #ffffff;
-$dark-mode-text: #e2e2e2;
+$dark-mode-text: #ffffff;
 $dark-mode-bg: #202020;
 
 $themes: (
@@ -35,6 +39,7 @@ body {
   width: 100%;
   height: 100%;
   font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
 }
 
 .App {
@@ -55,6 +60,7 @@ body {
   border-bottom: 1px solid $divider;
   padding: 0px 10px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .title {
@@ -90,17 +96,18 @@ body {
 }
 
 .game {
-  width: 100vw;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
   margin: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   user-select: none;
-  // background: themed("app-bg");
-  // color: themed("text-color");
+  flex-shrink: 1;
+  flex: 1;
+  box-sizing: border-box;
 }
 
 .transform {
@@ -165,6 +172,10 @@ body {
   }
 }
 
+.gameboard {
+  margin-top: auto;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -179,7 +190,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem;
+  font-size: 5vh;
   box-sizing: border-box;
   font-weight: bold;
   color: $light-mode-text;
@@ -191,16 +202,23 @@ body {
 }
 
 .keyboard {
-  margin-top: 1rem;
+  width: 100%;
+  margin: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 1%;
+}
+
+.keyboard .row {
+  width: 100%;
+  margin: auto;
+  justify-content: center;
 }
 
 .key {
-  width: 50px;
-  height: 70px;
+  height: 7.5vh;
   margin: 3px;
   background-color: $key-color;
   border-radius: 10%;
@@ -208,13 +226,43 @@ body {
   justify-content: center;
   align-items: center;
   transition-duration: 0.1s;
-  font-size: 1rem;
+  font-size: 1.7vh;
+  font-weight: bold;
   cursor: pointer;
   border: 0px;
+  flex-shrink: 1;
 }
 
-.key:hover {
-  background: $key-hover-color;
+.fa-delete-left {
+  font-size: 2.5vh;
+}
+
+@media only screen and (min-width: 1000px) {
+  .key:hover {
+    background: $key-hover-color;
+  }
+
+  .key.green:hover,
+  .copy-btn.green:hover {
+    background: $green-hover;
+  }
+
+  .key.yellow:hover,
+  .import-btn.yellow:hover {
+    background: $yellow-hover;
+  }
+
+  .key.gray:hover {
+    background: $gray-hover;
+  }
+
+  .share:hover {
+    background: $green-hover;
+  }
+
+  .reset-btn:hover {
+    background: $red-hover;
+  }
 }
 
 .green {
@@ -231,6 +279,20 @@ body {
   border: 0px;
 }
 
+.orange {
+  border: 2px solid $orange;
+  background: $orange;
+  color: white;
+  border: 0px;
+}
+
+.blue {
+  border: 2px solid $blue;
+  background: $blue;
+  color: white;
+  border: 0px;
+}
+
 .gray {
   border: 2px solid $gray;
   background: $gray;
@@ -238,28 +300,10 @@ body {
   border: 0px;
 }
 
-.key.green:hover,
-.copy-btn:hover {
-  background: $green-hover;
-}
-
-.key.yellow:hover,
-.import-btn:hover {
-  background: $yellow-hover;
-}
-
-.key.gray:hover {
-  background: $gray-hover;
-}
-
-.stats-modal {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .ReactModal__Content {
+  width: min(500px, 90vw);
+  height: fit-content;
+  margin: auto;
   animation: fadeIn 0.15s ease-in;
 }
 
@@ -289,33 +333,48 @@ body {
   }
 }
 
-.close-btn {
-  cursor: pointer;
-  width: 1.5rem;
-  height: 1.5rem;
-  align-self: flex-end;
+.modal-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 h3 {
   display: flex;
   justify-content: center;
-  margin: 0px auto;
+  margin-left: auto;
+}
+
+.close-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.stats-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stats-wrapper {
   display: flex;
   flex-direction: row;
-  width: 50%;
+  justify-content: space-around;
+  width: 80%;
   margin: auto;
 }
 
 .stat-container {
+  width: 50%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 25%;
-  margin: 8% auto;
+  margin: 4% auto;
 }
 
 .stat {
@@ -347,7 +406,6 @@ h3 {
 
 .bar {
   color: white;
-  background-color: $bar-color;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -361,7 +419,7 @@ h3 {
 }
 
 .countdown-share-wrapper {
-  width: 90%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -385,34 +443,39 @@ h3 {
 }
 
 .countdown {
-  font-size: 2.5rem;
+  font-size: min(4.5vh, 8vw);
 }
 
 .share {
-  color: white;
   width: 75%;
   height: 50%;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   border: 0px;
-  background-color: $green;
   cursor: pointer;
   transition-duration: 0.1s;
   border-radius: 4px;
 }
 
-.share:hover {
-  background: $green-hover;
-}
-
 .win-message {
   display: flex;
   width: 150px;
-  height: 40px;
-  margin: 1rem;
+  height: 6vh;
+  margin-bottom: 1rem;
   justify-content: center;
   align-items: center;
+  color: $light-mode-text;
   background-color: $win-message;
   font-weight: bold;
+  border-radius: 8px;
+  z-index: 2;
+}
+
+@media only screen and (max-height: 800px) {
+  .win-message {
+    position: absolute;
+    top: 8vh;
+    margin: 1rem;
+  }
 }
 
 .rules-modal,
@@ -425,10 +488,6 @@ h3 {
 .options-modal,
 .stats-modal {
   padding: 5%;
-}
-
-.rules-modal h3 {
-  margin-bottom: 1rem;
 }
 
 .rules-modal p {
@@ -456,6 +515,8 @@ hr {
 .label-container {
   display: flex;
   flex-direction: column;
+  width: 70%;
+  flex-shrink: 1;
 }
 
 .option-label {
@@ -463,6 +524,7 @@ hr {
 }
 
 .option-description {
+  word-wrap: break-word;
   font-size: 0.8rem;
   color: gray;
 }
@@ -491,24 +553,12 @@ textarea {
   transition-duration: 0.1s;
 }
 
-.copy-btn {
-  background-color: $green;
-}
-
 textarea {
   margin: 10px 0px;
 }
 
-.import-btn {
-  background-color: $yellow;
-}
-
 .reset-btn {
   background-color: $red;
-}
-
-.reset-btn:hover {
-  background: $red-hover;
 }
 
 .--dark-mode {
@@ -521,13 +571,14 @@ textarea {
 }
 
 .--modal-dark-mode {
-  background: $dark-mode-bg;
-  color: $dark-mode-text;
-  position: absolute;
-  inset: 48px;
+  // background: $dark-mode-bg;
+  // color: $dark-mode-text;
 }
 
-.--title-dark-mode,
 .--nav-btn-dark-mode {
   color: $dark-mode-text;
+}
+
+.--title-dark-mode {
+  color: white;
 }
