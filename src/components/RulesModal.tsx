@@ -57,7 +57,7 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
         Each guess must be a valid five-letter word. Hit the enter button to
         submit.
       </p>
-      <p>
+      <p style={{ marginBottom: "0" }}>
         After each guess, the color of the tiles will change to show how close
         your guess was to the word.
       </p>

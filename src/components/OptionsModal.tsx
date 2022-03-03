@@ -158,7 +158,7 @@ const OptionsModal = ({
         <textarea
           name="textValue"
           onChange={(e) => setImportText(e.target.value)}
-          rows={4}
+          rows={3}
         />
         <button
           className={`import-btn ${contrastMode ? "blue" : "yellow"}`}
