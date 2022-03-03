@@ -99,14 +99,17 @@ function App() {
       let rowSquares = "";
       row.forEach((tile) => {
         let square = "";
-        switch (tile.color) {
-          case "green":
+        switch (true) {
+          case tile.color === "green":
             square = "🟩";
             break;
-          case "yellow":
+          case tile.color === "yellow":
             square = "🟨";
             break;
-          case "gray":
+          case tile.color === "gray" && darkMode:
+            square = "⬛";
+            break;
+          default:
             square = "⬜";
             break;
         }
@@ -409,6 +412,15 @@ function App() {
     setIsCurrentInputValid(isValid);
   }, [currentGuess]);
 
+  // useEffect(() => {
+  //   if (!firstRender.current) return;
+  //   if (darkMode) {
+  //     document.body.classList.add("--dark-mode");
+  //   } else {
+  //     document.body.classList.remove("--dark-mode");
+  //   }
+  // }, [darkMode]);
+
   const modalStyle = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.3)",
@@ -477,7 +489,9 @@ function App() {
             <i className="fa-regular fa-circle-question"></i>
           </button>
         </div>
-        <div className="title">Zardle</div>
+        <div className={`title${darkMode ? " --title-dark-mode" : ""}`}>
+          Zardle
+        </div>
         <div className="nav-btn-container-right">
           <button onClick={resetBoard}>Reset</button>
           <button

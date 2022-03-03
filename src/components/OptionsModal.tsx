@@ -35,6 +35,13 @@ const OptionsModal = ({
   const [importText, setImportText] = useState("");
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
 
+  const toggleBodyDarkMode = (bool: boolean) => {
+    bool
+      ? document.body.classList.add("--dark-mode")
+      : document.body.classList.remove("--dark-mode");
+    setDarkMode(bool);
+  };
+
   return (
     <div className="options-modal">
       <div className="close-btn" onClick={closeModal}>
@@ -65,7 +72,7 @@ const OptionsModal = ({
       <div className="option-container">
         <span className="option-label">Dark Theme</span>
         <Switch
-          onChange={setDarkMode}
+          onChange={toggleBodyDarkMode}
           checked={darkMode}
           height={HEIGHT}
           width={WIDTH}

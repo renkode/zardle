@@ -33,6 +33,7 @@ $themes: (
 html,
 body {
   width: 100%;
+  height: 100%;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -85,7 +86,6 @@ body {
   border: 0px;
   background-color: transparent;
   font-size: 1.2rem;
-  color: $light-mode-text;
   cursor: pointer;
 }
 
@@ -527,6 +527,7 @@ textarea {
   inset: 48px;
 }
 
+.--title-dark-mode,
 .--nav-btn-dark-mode {
   color: $dark-mode-text;
 }
