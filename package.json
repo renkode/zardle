@@ -1,6 +1,5 @@
 {
   "name": "zardle",
-  "homepage": "http://renkode.github.io/zardle",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
