@@ -12,11 +12,12 @@ $gray-hover: #545657a2;
 $red: #e64242;
 $red-hover: #ca3434;
 $divider: #9493936e;
-$win-message: #ffffff;
 $key-color: #cdd0d181;
 $key-hover-color: #aeb0b181;
 $tile-color: #a4a6a779;
 $bar-color: #828485cc;
+$message: #ffffff;
+$message-color: #cdd0d181;
 
 $light-mode-text: #383838;
 $light-mode-bg: #ffffff;
@@ -66,18 +67,18 @@ body {
   display: flex;
   align-items: center;
   height: 100%;
-  font-size: 36px;
+  font-size: 32px;
   font-weight: bold;
   line-height: 100%;
   text-align: center;
-  color: $light-mode-text;
+  letter-spacing: 2px;
 }
 
 .nav-btn-container-left,
 .nav-btn-container-right {
   display: flex;
   align-items: center;
-  width: 20%;
+  width: 10%;
 }
 
 .nav-btn-container-left {
@@ -90,6 +91,7 @@ body {
 
 .nav-btn {
   border: 0px;
+  margin: 0px 4px;
   background-color: transparent;
   font-size: 1.2rem;
   cursor: pointer;
@@ -225,7 +227,7 @@ body {
   justify-content: center;
   align-items: center;
   transition-duration: 0.1s;
-  font-size: 1.7vh;
+  font-size: max(1.7vh, 12px);
   font-weight: bold;
   cursor: pointer;
   border: 0px;
@@ -242,7 +244,8 @@ body {
   }
 
   .key.green:hover,
-  .copy-btn.green:hover {
+  .copy-btn.green:hover,
+  .share.green:hover {
     background: $green-hover;
   }
 
@@ -251,16 +254,20 @@ body {
     background: $yellow-hover;
   }
 
-  .key.gray:hover {
-    background: $gray-hover;
+  .key.orange:hover,
+  .copy-btn.orange:hover,
+  .share.orange:hover {
+    background: $orange-hover;
   }
 
-  .share:hover {
-    background: $green-hover;
+  .key.blue:hover,
+  .import-btn.blue:hover {
+    background: $blue-hover;
   }
 
+  .key.gray:hover,
   .reset-btn:hover {
-    background: $red-hover;
+    background: $gray-hover;
   }
 
   .tile {
@@ -378,7 +385,7 @@ h4 {
 }
 
 .stat-container {
-  width: 50%;
+  width: 22%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -422,9 +429,10 @@ h4 {
   margin-left: 4px;
   line-height: 120%;
   box-sizing: border-box;
-  min-width: 18px;
+  min-width: 20px;
   font-size: 1rem;
   height: 1.2rem;
+  font-weight: bold;
 }
 
 .countdown-share-wrapper {
@@ -466,22 +474,22 @@ h4 {
   font-weight: bold;
 }
 
-.win-message {
+.message {
   display: flex;
-  width: 150px;
+  padding: 0px 16px;
   height: 6vh;
   margin-top: 1rem;
   justify-content: center;
   align-items: center;
   color: $light-mode-text;
-  background-color: $win-message;
+  background-color: $message-color;
   font-weight: bold;
   border-radius: 8px;
   z-index: 2;
 }
 
 @media only screen and (max-height: 800px) {
-  .win-message {
+  .message {
     position: absolute;
     top: 7vh;
     margin: 1rem;
@@ -527,7 +535,7 @@ hr {
 }
 
 .option-label {
-  font-size: min(1.2rem, 3vh);
+  font-size: 1rem;
 }
 
 .option-description {
@@ -566,7 +574,7 @@ textarea {
 }
 
 .reset-btn {
-  background-color: $red;
+  background-color: $gray;
 }
 
 .--dark-mode {
@@ -578,15 +586,14 @@ textarea {
   color: $dark-mode-text;
 }
 
-.--modal-dark-mode {
-  // background: $dark-mode-bg;
-  // color: $dark-mode-text;
-}
-
 .--nav-btn-dark-mode {
   color: $dark-mode-text;
 }
 
 .--title-dark-mode {
   color: white;
+}
+
+.--message-dark-mode {
+  background-color: #ffffff;
 }

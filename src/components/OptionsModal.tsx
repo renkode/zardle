@@ -5,6 +5,7 @@ import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 import Switch from "react-switch";
 
 interface OptionsModalProps {
+  guessCount: number;
   hardMode: boolean;
   setHardMode(bool: boolean): void;
   swapToContrastColors(bool: boolean): void;
@@ -17,6 +18,7 @@ interface OptionsModalProps {
 }
 
 const OptionsModal = ({
+  guessCount,
   hardMode,
   setHardMode,
   swapToContrastColors,
@@ -61,12 +63,14 @@ const OptionsModal = ({
         <div className="label-container">
           <span className="option-label">Hard Mode</span>
           <span className="option-description">
-            Any revealed hints must be used in subsequent guesses
+            Any revealed hints must be used in subsequent guesses (cannot be
+            toggled after first guess)
           </span>
         </div>
         <Switch
           onChange={setHardMode}
           checked={hardMode}
+          disabled={guessCount > 0}
           height={HEIGHT}
           width={WIDTH}
           handleDiameter={HANDLE_DIAMETER}

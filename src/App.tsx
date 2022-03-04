@@ -4,7 +4,7 @@ import axios from "axios";
 import Modal from "react-modal";
 import Gameboard from "./components/Gameboard";
 import Keyboard from "./components/Keyboard";
-import WinMessage from "./components/WinMessage";
+import Message from "./components/Message";
 import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
 import OptionsModal from "./components/OptionsModal";
@@ -47,8 +47,8 @@ function App() {
   const [enableWordCheck, setEnableWordCheck] = useState(true);
   const [enableInput, setEnableInput] = useState(true);
   const [playedAnimation, setPlayedAnimation] = useState(false);
-  const [winMessage, setWinMessage] = useState("");
-  const [showWinMessage, setShowWinMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showMessage, setShowMessage] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("stats");
   const [stats, setStats] = useState<{
@@ -82,9 +82,24 @@ function App() {
 
   function importData(str: string) {
     if (str.length === 0) return;
-    const data = JSON.parse(str);
+    let data;
+    try {
+      data = JSON.parse(str);
+    } catch {
+      setMessage("Import failed");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1000);
+      return;
+    }
     for (let key in data) {
-      data[key] = JSON.parse(data[key]);
+      try {
+        data[key] = JSON.parse(data[key]);
+      } catch {
+        setMessage("Import failed");
+        setShowMessage(true);
+        setTimeout(() => setShowMessage(false), 1000);
+        return;
+      }
     }
     loadGame(data, true);
     closeModal();
@@ -159,7 +174,7 @@ function App() {
     setWon(null);
     setPlayedToday(false);
     setEnableInput(true);
-    setShowWinMessage(false);
+    setShowMessage(false);
   }
 
   function resetStats() {
@@ -195,6 +210,9 @@ function App() {
       }
     } else {
       data = storage;
+      setMessage("Import success!");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1200);
     }
     if (Object.keys(data).length === 0) return;
     setBoard(data.board || createDefaultBoard(WORD_LENGTH, MAX_GUESSES));
@@ -237,6 +255,27 @@ function App() {
     return WORDS.VALID_WORDS.includes(word);
   }
 
+  function validInHardMode() {
+    let lastRow = board[guesses.length - 1];
+    let isValid = true;
+    const revealedTiles = lastRow.filter((tile) => tile.color !== "gray");
+    const revealedLetters = revealedTiles.map((tile) => tile.symbol);
+    console.log(revealedLetters);
+    revealedLetters.forEach((letter) => {
+      if (!isValid) return;
+      if (!currentGuess.includes(letter)) {
+        setIsCurrentInputValid(false);
+        setPlayShake(true);
+        setTimeout(() => setPlayShake(false), 1000);
+        setMessage(`Guess must contain ${letter.toUpperCase()}`);
+        setShowMessage(true);
+        setTimeout(() => setShowMessage(false), 1200);
+        isValid = false;
+      }
+    });
+    return isValid;
+  }
+
   function handleSubmit() {
     if (playedToday || !enableInput) return;
     const isValid = validateWord(currentGuess);
@@ -244,7 +283,13 @@ function App() {
       setIsCurrentInputValid(false);
       setPlayShake(true);
       setTimeout(() => setPlayShake(false), 1000);
+      setMessage("Not in word list");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1000);
       return;
+    }
+    if (hardMode) {
+      if (guesses.length !== 0 && !validInHardMode()) return;
     }
     setIsCurrentInputValid(true);
     const g = guesses;
@@ -333,11 +378,11 @@ function App() {
       dist[Object.keys(dist)[guesses.length - 1]] += 1;
       tempStats.guessDistribution = dist;
       tempStats.streak += 1;
-      setWinMessage(WIN_MESSAGE[guesses.length - 1]);
+      setMessage(WIN_MESSAGE[guesses.length - 1]);
     } else {
       tempStats.losses += 1;
       tempStats.streak = 0;
-      setWinMessage(`"${DAILY_WORD.current.toUpperCase()}"`);
+      setMessage(`"${DAILY_WORD.current.toUpperCase()}"`);
     }
     tempStats.totalGames = stats.totalGames + 1;
     setStats(tempStats);
@@ -345,7 +390,7 @@ function App() {
     setPlayedToday(true);
     setEnableInput(false);
     setTimeout(() => {
-      setShowWinMessage(true);
+      setShowMessage(true);
     }, 1400);
     setTimeout(() => {
       openModal("stats");
@@ -388,7 +433,7 @@ function App() {
   function openModal(type: string) {
     setModalType(type);
     setIsOpen(true);
-    setShowWinMessage(false);
+    setShowMessage(false);
     setEnableInput(false);
   }
 
@@ -496,6 +541,7 @@ function App() {
     case "options":
       modal = (
         <OptionsModal
+          guessCount={guesses.length}
           hardMode={hardMode}
           setHardMode={setHardMode}
           swapToContrastColors={swapToContrastColors}
@@ -520,37 +566,37 @@ function App() {
     >
       <div className="nav-bar">
         <div className="nav-btn-container-left">
-          <button
+          <div
             className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
             onClick={() => openModal("rules")}
           >
-            <i className="fa-regular fa-circle-question"></i>
-          </button>
+            <i className="fa-regular fa-circle-question" />
+          </div>
         </div>
         <div className={`title${darkMode ? " --title-dark-mode" : ""}`}>
           ZARDLE
         </div>
         <div className="nav-btn-container-right">
-          <button onClick={resetBoard}>Reset</button>
-          <button
+          <div className="nav-btn" onClick={resetBoard}>
+            <i className="fa-solid fa-recycle" />
+          </div>
+          <div
             className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
             onClick={() => openModal("stats")}
           >
             <i className="fa-solid fa-chart-column" />
-          </button>
-          <button
+          </div>
+          <div
             className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
             onClick={() => openModal("options")}
           >
             <i className="fa-solid fa-gear" />
-          </button>
+          </div>
         </div>
       </div>
-      {/* {DAILY_WORD.current}
-      {zardleDay} */}
 
       <div className={`game${darkMode ? " --dark-mode" : ""}`}>
-        <WinMessage visible={showWinMessage} message={winMessage}></WinMessage>
+        <Message visible={showMessage} message={message}></Message>
         <Gameboard
           board={board}
           WORD_LENGTH={WORD_LENGTH}
