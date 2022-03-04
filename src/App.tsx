@@ -34,6 +34,8 @@ function App() {
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
   const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
   const firstRender = useRef(false);
+  const messageRef = useRef<HTMLDivElement>(null);
+
   const [zardleDay, setZardleDay] = useState(0);
   const [hardMode, setHardMode] = useState(false);
   const [board, setBoard] = useState(
@@ -78,6 +80,23 @@ function App() {
     if (total === 0) return 0;
     let percentage = ((total - losses) / total) * 100;
     return Math.round(percentage);
+  }
+
+  function displayMessage(message: string, duration: number) {
+    if (messageRef.current)
+      messageRef.current.classList.remove("message--fade");
+    setMessage(message);
+    setShowMessage(true);
+    if (duration > 0) {
+      setTimeout(() => {
+        if (messageRef.current) {
+          messageRef.current.classList.add("message--fade");
+          messageRef.current.addEventListener("animationend", () => {
+            setShowMessage(false);
+          });
+        }
+      }, duration - 200);
+    }
   }
 
   function importData(str: string) {
@@ -144,10 +163,12 @@ function App() {
     });
     let text = `Zardle ${zardleDay} ${attempts}/${MAX_GUESSES}\n\n${squares}`;
     navigator.clipboard.writeText(text);
+    displayMessage("Copied results to clipboard", 1200);
   }
 
   function copyDataClipboard() {
     navigator.clipboard.writeText(JSON.stringify(localStorage));
+    displayMessage("Copied data to clipboard", 1200);
   }
 
   function createDefaultBoard(
@@ -210,9 +231,7 @@ function App() {
       }
     } else {
       data = storage;
-      setMessage("Import success!");
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 1200);
+      displayMessage("Import success!", 1200);
     }
     if (Object.keys(data).length === 0) return;
     setBoard(data.board || createDefaultBoard(WORD_LENGTH, MAX_GUESSES));
@@ -260,16 +279,13 @@ function App() {
     let isValid = true;
     const revealedTiles = lastRow.filter((tile) => tile.color !== "gray");
     const revealedLetters = revealedTiles.map((tile) => tile.symbol);
-    console.log(revealedLetters);
     revealedLetters.forEach((letter) => {
       if (!isValid) return;
       if (!currentGuess.includes(letter)) {
         setIsCurrentInputValid(false);
         setPlayShake(true);
         setTimeout(() => setPlayShake(false), 1000);
-        setMessage(`Guess must contain ${letter.toUpperCase()}`);
-        setShowMessage(true);
-        setTimeout(() => setShowMessage(false), 1200);
+        displayMessage(`Guess must contain ${letter.toUpperCase()}`, 1200);
         isValid = false;
       }
     });
@@ -283,9 +299,7 @@ function App() {
       setIsCurrentInputValid(false);
       setPlayShake(true);
       setTimeout(() => setPlayShake(false), 1000);
-      setMessage("Not in word list");
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 1000);
+      displayMessage("Not in word list", 1000);
       return;
     }
     if (hardMode) {
@@ -378,20 +392,23 @@ function App() {
       dist[Object.keys(dist)[guesses.length - 1]] += 1;
       tempStats.guessDistribution = dist;
       tempStats.streak += 1;
-      setMessage(WIN_MESSAGE[guesses.length - 1]);
+      setTimeout(
+        () => displayMessage(WIN_MESSAGE[guesses.length - 1], 0),
+        1400
+      );
     } else {
       tempStats.losses += 1;
       tempStats.streak = 0;
-      setMessage(`"${DAILY_WORD.current.toUpperCase()}"`);
+      setTimeout(
+        () => displayMessage(`"${DAILY_WORD.current.toUpperCase()}"`, 0),
+        1400
+      );
     }
     tempStats.totalGames = stats.totalGames + 1;
     setStats(tempStats);
     setWon(win);
     setPlayedToday(true);
     setEnableInput(false);
-    setTimeout(() => {
-      setShowMessage(true);
-    }, 1400);
     setTimeout(() => {
       openModal("stats");
     }, 3000);
@@ -426,7 +443,6 @@ function App() {
         })
       );
     }
-    console.log(newBoard);
     setBoard(newBoard);
   }
 
@@ -526,6 +542,7 @@ function App() {
     case "stats":
       modal = (
         <StatsModal
+          playedToday={playedToday}
           won={won}
           guesses={guesses}
           stats={stats}
@@ -596,7 +613,11 @@ function App() {
       </div>
 
       <div className={`game${darkMode ? " --dark-mode" : ""}`}>
-        <Message visible={showMessage} message={message}></Message>
+        <Message
+          ref={messageRef}
+          visible={showMessage}
+          message={message}
+        ></Message>
         <Gameboard
           board={board}
           WORD_LENGTH={WORD_LENGTH}

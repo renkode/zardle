@@ -488,6 +488,19 @@ h4 {
   z-index: 2;
 }
 
+.message--fade {
+  animation: fadeOutMessage 0.25s ease;
+}
+
+@keyframes fadeOutMessage {
+  from {
+    opacity: 100%;
+  }
+  to {
+    opacity: 0%;
+  }
+}
+
 @media only screen and (max-height: 800px) {
   .message {
     position: absolute;

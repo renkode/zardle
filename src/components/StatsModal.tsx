@@ -4,6 +4,7 @@ import Countdown from "react-countdown";
 import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 
 interface StatsModalProps {
+  playedToday: boolean;
   won: boolean | null;
   guesses: Array<string>;
   winRate: number;
@@ -19,6 +20,7 @@ interface StatsModalProps {
 }
 
 const StatsModal = ({
+  playedToday,
   won,
   guesses,
   winRate,
@@ -108,8 +110,11 @@ const StatsModal = ({
         </div>
         <div className="share-container">
           <button
-            className={`share ${contrastMode ? "orange" : "green"}`}
+            className={`share ${
+              !playedToday ? "gray" : contrastMode ? "orange" : "green"
+            }`}
             onClick={share}
+            disabled={!playedToday}
           >
             SHARE <i className="fa-solid fa-share-nodes"></i>
           </button>

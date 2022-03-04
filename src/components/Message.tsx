@@ -1,5 +1,5 @@
 import "../App.scss";
-import { memo, useContext } from "react";
+import { memo, useContext, forwardRef } from "react";
 import { DarkModeContext } from "../contexts/DarkModeProvider";
 
 interface MessageProps {
@@ -7,16 +7,19 @@ interface MessageProps {
   message?: string;
 }
 
-const Message = ({ visible, message = "" }: MessageProps) => {
-  const { darkMode } = useContext(DarkModeContext);
-  return (
-    <div
-      className={`message ${darkMode ? "--message-dark-mode" : ""}`}
-      style={{ visibility: `${visible ? "visible" : "hidden"}` }}
-    >
-      {message}
-    </div>
-  );
-};
+const Message = forwardRef<HTMLDivElement, MessageProps>(
+  ({ visible, message = "" }: MessageProps, ref) => {
+    const { darkMode } = useContext(DarkModeContext);
+    return (
+      <div
+        className={`message ${darkMode ? "--message-dark-mode" : ""}`}
+        style={{ visibility: `${visible ? "visible" : "hidden"}` }}
+        ref={ref}
+      >
+        {message}
+      </div>
+    );
+  }
+);
 
 export default memo(Message);
