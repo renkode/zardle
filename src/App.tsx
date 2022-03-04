@@ -423,7 +423,7 @@ function App() {
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
     localStorage.setItem("contrastMode", JSON.stringify(contrastMode));
-    localStorage.setItem("hardMode", JSON.stringify(darkMode));
+    localStorage.setItem("hardMode", JSON.stringify(hardMode));
   }
 
   function swapToContrastColors(bool: boolean) {
