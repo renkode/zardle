@@ -5,6 +5,7 @@ import { ContrastModeContext } from "../contexts/ContrastModeProvider";
 import Switch from "react-switch";
 
 interface OptionsModalProps {
+  playedToday: boolean;
   guessCount: number;
   hardMode: boolean;
   setHardMode(bool: boolean): void;
@@ -18,6 +19,7 @@ interface OptionsModalProps {
 }
 
 const OptionsModal = ({
+  playedToday,
   guessCount,
   hardMode,
   setHardMode,
@@ -70,7 +72,7 @@ const OptionsModal = ({
         <Switch
           onChange={setHardMode}
           checked={hardMode}
-          disabled={guessCount > 0}
+          disabled={guessCount > 0 && !playedToday}
           height={HEIGHT}
           width={WIDTH}
           handleDiameter={HANDLE_DIAMETER}

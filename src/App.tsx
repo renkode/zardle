@@ -580,6 +580,7 @@ function App() {
     case "options":
       modal = (
         <OptionsModal
+          playedToday={playedToday}
           guessCount={guesses.length}
           hardMode={hardMode}
           setHardMode={setHardMode}
