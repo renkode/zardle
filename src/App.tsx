@@ -36,7 +36,7 @@ function App() {
   const firstRender = useRef(false);
   const messageRef = useRef<HTMLDivElement>(null);
 
-  const [zardleDay, setZardleDay] = useState(0);
+  const [zardleDay, setZardleDay] = useState(1);
   const [hardMode, setHardMode] = useState(false);
   const [board, setBoard] = useState(
     createDefaultBoard(WORD_LENGTH, MAX_GUESSES)
@@ -67,9 +67,9 @@ function App() {
   //=======================================================================
 
   async function fetchdailyWord() {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    setZardleDay(72);
-    DAILY_WORD.current = "react";
+    const res = await axios.get("https://zardle.renkode.workers.dev");
+    setZardleDay(res.data.day);
+    DAILY_WORD.current = res.data.dailyWord;
   }
 
   function countLetter(word: string, letter: string) {
