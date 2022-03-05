@@ -251,7 +251,7 @@ function App() {
           try {
             data[key] = JSON.parse(storage.getItem(key) || "{}");
           } catch {
-            break;
+            continue;
           }
         }
       }
