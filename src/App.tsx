@@ -607,9 +607,6 @@ function App() {
           ZARDLE
         </div>
         <div className="nav-btn-container-right">
-          <div className="nav-btn" onClick={resetBoard}>
-            <i className="fa-solid fa-recycle" />
-          </div>
           <div
             className={`nav-btn${darkMode ? " --nav-btn-dark-mode" : ""}`}
             onClick={() => openModal("stats")}
