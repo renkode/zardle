@@ -76,9 +76,8 @@ function App() {
         setZardleDay(res.data.day);
         loadMiscOptions();
         resetBoard();
-      } else {
-        loadGame(localStorage);
       }
+      loadGame(localStorage);
     } catch {
       displayMessage("Error, please refresh", 1200);
     }
