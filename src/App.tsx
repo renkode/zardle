@@ -70,7 +70,7 @@ function App() {
     try {
       //const res = { data: { day: 1, dailyWord: "react" } };
       const res = await axios.get("https://zardle.renkode.workers.dev");
-      let responseOK = res && res.status === 200 && res.statusText === "OK";
+      let responseOK = res && res.status === 200;
       if (responseOK) {
         DAILY_WORD.current = res.data.dailyWord;
         const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
@@ -88,7 +88,7 @@ function App() {
       }
     } catch (err) {
       console.log(err);
-      displayMessage("Error, please refresh", 1200);
+      displayMessage("Error occurred, please refresh", 2000);
     }
   }
 
