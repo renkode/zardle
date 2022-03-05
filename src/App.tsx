@@ -70,18 +70,24 @@ function App() {
     try {
       //const res = { data: { day: 1, dailyWord: "react" } };
       const res = await axios.get("https://zardle.renkode.workers.dev");
-      DAILY_WORD.current = res.data.dailyWord;
-      const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
-      if (day !== res.data.day) {
-        localStorage.setItem("zardleDay", JSON.stringify(res.data.day));
-        setZardleDay(res.data.day);
-        loadMiscOptions();
-        resetBoard();
+      let responseOK = res && res.status === 200 && res.statusText === "OK";
+      if (responseOK) {
+        DAILY_WORD.current = res.data.dailyWord;
+        const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
+        if (day !== res.data.day) {
+          localStorage.setItem("zardleDay", JSON.stringify(res.data.day));
+          setZardleDay(res.data.day);
+          loadMiscSettings();
+          resetBoard();
+        } else {
+          setZardleDay(day);
+          loadGame(localStorage);
+        }
       } else {
-        setZardleDay(day);
+        throw new Error("Fetch failed");
       }
-      loadGame(localStorage);
-    } catch {
+    } catch (err) {
+      console.log(err);
       displayMessage("Error, please refresh", 1200);
     }
   }
@@ -262,13 +268,14 @@ function App() {
     if (data.playedToday) setEnableInput(false);
   }
 
-  function loadMiscOptions() {
+  function loadMiscSettings() {
     let data: { [key: string]: any } = {};
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
     }
     if (Object.keys(data).length === 0) return;
+    setStats(data.stats || DEFAULT_STATS);
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
     setContrastMode(data.contrastMode || false);
