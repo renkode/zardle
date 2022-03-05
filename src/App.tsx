@@ -654,7 +654,7 @@ function App() {
         onRequestClose={closeModal}
         contentLabel="Statistics"
         style={darkMode ? modalDarkMode : modalLightMode}
-        closeTimeoutMS={150}
+        closeTimeoutMS={100}
       >
         {modal}
       </Modal>
