@@ -76,6 +76,8 @@ function App() {
         setZardleDay(res.data.day);
         loadMiscOptions();
         resetBoard();
+      } else {
+        setZardleDay(day);
       }
       loadGame(localStorage);
     } catch {
