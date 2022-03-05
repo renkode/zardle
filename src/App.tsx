@@ -66,10 +66,22 @@ function App() {
 
   //=======================================================================
 
-  async function fetchdailyWord() {
-    const res = await axios.get("https://zardle.renkode.workers.dev");
-    setZardleDay(res.data.day);
-    DAILY_WORD.current = res.data.dailyWord;
+  async function fetchDailyWord() {
+    try {
+      const res = await axios.get("https://zardle.renkode.workers.dev");
+      DAILY_WORD.current = res.data.dailyWord;
+      const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
+      if (day !== res.data.day) {
+        localStorage.setItem("zardleDay", JSON.stringify(res.data.day));
+        setZardleDay(day);
+        loadMiscOptions();
+        resetBoard();
+      } else {
+        loadGame(localStorage);
+      }
+    } catch {
+      displayMessage("Error, please refresh", 1200);
+    }
   }
 
   function countLetter(word: string, letter: string) {
@@ -246,6 +258,19 @@ function App() {
     setContrastMode(data.contrastMode || false);
     setHardMode(data.hardMode || false);
     if (data.playedToday) setEnableInput(false);
+  }
+
+  function loadMiscOptions() {
+    let data: { [key: string]: any } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) data[key] = JSON.parse(localStorage.getItem(key) || "{}");
+    }
+    if (Object.keys(data).length === 0) return;
+    setEnableWordCheck(data.enableWordCheck || false);
+    setDarkMode(data.darkMode || false);
+    setContrastMode(data.contrastMode || false);
+    setHardMode(data.hardMode || false);
   }
 
   function handleKeyDown(e: any, symbol: string = "") {
@@ -461,20 +486,8 @@ function App() {
   //=======================================================================
 
   useEffect(() => {
-    fetchdailyWord();
+    fetchDailyWord();
   }, []);
-
-  useEffect(() => {
-    if (!firstRender.current) return; // DO NOT RUN ON MOUNT
-    const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
-    if (zardleDay !== day) {
-      localStorage.setItem("zardleDay", JSON.stringify(zardleDay));
-      resetBoard();
-      saveGame();
-    } else {
-      if (DAILY_WORD.current !== "") loadGame(localStorage);
-    }
-  }, [DAILY_WORD.current, zardleDay]);
 
   useEffect(() => {
     if (stats.streak > stats.highestStreak) {
@@ -642,7 +655,7 @@ function App() {
         onRequestClose={closeModal}
         contentLabel="Statistics"
         style={darkMode ? modalDarkMode : modalLightMode}
-        closeTimeoutMS={145}
+        closeTimeoutMS={150}
       >
         {modal}
       </Modal>

@@ -1,5 +1,5 @@
 import "../App.scss";
-import { memo, useContext } from "react";
+import { useContext } from "react";
 import { DarkModeContext } from "../contexts/DarkModeProvider";
 
 interface TileProps {

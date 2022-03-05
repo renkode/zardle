@@ -1,5 +1,4 @@
 import "../App.scss";
-import { memo } from "react";
 import Row from "./Row";
 
 interface BoardProps {
