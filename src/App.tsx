@@ -73,7 +73,7 @@ function App() {
       const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
       if (day !== res.data.day) {
         localStorage.setItem("zardleDay", JSON.stringify(res.data.day));
-        setZardleDay(day);
+        setZardleDay(res.data.day);
         loadMiscOptions();
         resetBoard();
       } else {
