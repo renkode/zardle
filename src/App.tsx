@@ -68,6 +68,7 @@ function App() {
 
   async function fetchDailyWord() {
     try {
+      //const res = { data: { day: 1, dailyWord: "react" } };
       const res = await axios.get("https://zardle.renkode.workers.dev");
       DAILY_WORD.current = res.data.dailyWord;
       const day = JSON.parse(localStorage.getItem("zardleDay") || "{}");
@@ -174,7 +175,7 @@ function App() {
         rowSquares = rowSquares.concat("\n"); // don't add newline at the last row
       squares = squares.concat(rowSquares);
     });
-    let text = `Zardle ${zardleDay} ${attempts}/${MAX_GUESSES}\n\n${squares}`;
+    let text = `Zardle ${zardleDay} ${attempts}/${MAX_GUESSES}\nhttps://zardle.pages.dev/\n\n${squares}`;
     navigator.clipboard.writeText(text);
     displayMessage("Copied results to clipboard", 1200);
   }
