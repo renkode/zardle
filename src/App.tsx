@@ -81,8 +81,8 @@ function App() {
           resetBoard();
         } else {
           setZardleDay(day);
-          loadGame(localStorage);
         }
+        loadGame(localStorage);
       } else {
         throw new Error("Fetch failed");
       }
