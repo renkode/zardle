@@ -247,7 +247,13 @@ function App() {
       // typescript doesn't seem to understand localstorage so it has to be written this way
       for (let i = 0; i < storage.length; i++) {
         const key = storage.key(i);
-        if (key) data[key] = JSON.parse(storage.getItem(key) || "{}");
+        if (key) {
+          try {
+            data[key] = JSON.parse(storage.getItem(key) || "{}");
+          } catch {
+            break;
+          }
+        }
       }
     } else {
       data = storage;
