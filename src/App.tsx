@@ -34,6 +34,7 @@ function App() {
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
   const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
   const firstRender = useRef(false);
+  const appRef = useRef<HTMLDivElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
 
   const [zardleDay, setZardleDay] = useState(1);
@@ -502,6 +503,7 @@ function App() {
 
   useEffect(() => {
     fetchDailyWord();
+    if (appRef.current) appRef.current.focus();
   }, []);
 
   useEffect(() => {
@@ -609,6 +611,7 @@ function App() {
       className={`App${darkMode ? " --dark-mode" : ""}`}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
+      ref={appRef}
     >
       <div className="nav-bar">
         <div className="nav-btn-container-left">
