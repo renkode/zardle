@@ -47,7 +47,7 @@ function App() {
   const [isCurrentInputValid, setIsCurrentInputValid] = useState(true); // light up current row as red if false
   const [playShake, setPlayShake] = useState(false);
   const [enableWordCheck, setEnableWordCheck] = useState(true);
-  const [enableInput, setEnableInput] = useState(true);
+  const [enableInput, setEnableInput] = useState(false);
   const [playedAnimation, setPlayedAnimation] = useState(false);
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
@@ -271,7 +271,7 @@ function App() {
     setDarkMode(data.darkMode || false);
     setContrastMode(data.contrastMode || false);
     setHardMode(data.hardMode || false);
-    if (data.playedToday) setEnableInput(false);
+    data.playedToday ? setEnableInput(false) : setEnableInput(true);
   }
 
   function loadMiscSettings() {
