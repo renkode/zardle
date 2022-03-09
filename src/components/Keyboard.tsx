@@ -5,17 +5,11 @@ import KeyButton from "./KeyButton";
 
 interface KeyboardProps {
   board: Array<Array<{ symbol: string; color: string }>>;
-  lastRow: Array<{ symbol: string; color: string }>;
   guesses: Array<string>;
   handleKeyDown: Function;
 }
 
-const Keyboard = ({
-  board,
-  lastRow,
-  guesses,
-  handleKeyDown,
-}: KeyboardProps) => {
+const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
   const SYMBOLS = [
     ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
     ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
@@ -76,7 +70,6 @@ const Keyboard = ({
     ) {
       resetArrays();
     } else {
-      //if (!lastRow) return;
       const timer = setTimeout(() => {
         setGrays(getGrays());
         setCorrectLetters(getCorrectLetters());

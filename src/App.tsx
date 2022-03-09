@@ -660,7 +660,6 @@ function App() {
         />
         <Keyboard
           board={board}
-          lastRow={board[currentRow - 1]}
           handleKeyDown={handleKeyDown}
           guesses={guesses}
         />
