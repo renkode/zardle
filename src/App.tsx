@@ -235,7 +235,6 @@ function App() {
         "Are you sure you want to reset? You will lose all your stats!"
       )
     ) {
-      localStorage.clear();
       resetBoard();
       resetStats();
       closeModal();
@@ -660,6 +659,7 @@ function App() {
           setPlayedAnimation={setPlayedAnimation}
         />
         <Keyboard
+          board={board}
           lastRow={board[currentRow - 1]}
           handleKeyDown={handleKeyDown}
           guesses={guesses}
