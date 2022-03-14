@@ -9,10 +9,7 @@ import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
 import OptionsModal from "./components/OptionsModal";
 import { DarkModeContext } from "./contexts/DarkModeProvider";
-import {
-  PaletteContext,
-  initialPaletteState,
-} from "./contexts/PaletteProvider";
+import { PaletteContext } from "./contexts/PaletteProvider";
 import WORDS from "./words.json";
 
 function App() {

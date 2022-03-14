@@ -45,7 +45,7 @@ const StatsModal = ({
   // timer until tomorrow at 9 PM PST
   let date = new Date();
   let time = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1, 5)
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1, 4)
   );
   if (time.getTime() - Date.now() <= 0) time.setDate(date.getDate() + 1.5); // ????
 

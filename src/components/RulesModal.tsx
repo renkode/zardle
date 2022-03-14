@@ -1,25 +1,17 @@
 import "../App.scss";
 import { memo, useContext } from "react";
 import Row from "./Row";
-import { ContrastModeContext } from "../contexts/ContrastModeProvider";
+import { PaletteContext } from "../contexts/PaletteProvider";
 
 interface RulesModalProps {
   closeModal(): void;
 }
 
 const RulesModal = ({ closeModal }: RulesModalProps) => {
-  const { contrastMode } = useContext(ContrastModeContext);
-  let CORRECT_COLOR;
-  let WRONG_SPOT_COLOR;
-  if (contrastMode) {
-    CORRECT_COLOR = "orange";
-    WRONG_SPOT_COLOR = "blue";
-  } else {
-    CORRECT_COLOR = "green";
-    WRONG_SPOT_COLOR = "yellow";
-  }
+  const { palette } = useContext(PaletteContext);
+
   const WEARY = [
-    { symbol: "w", color: CORRECT_COLOR },
+    { symbol: "w", color: palette[1].name },
     { symbol: "e", color: "" },
     { symbol: "a", color: "" },
     { symbol: "r", color: "" },
@@ -27,7 +19,7 @@ const RulesModal = ({ closeModal }: RulesModalProps) => {
   ];
   const PILLS = [
     { symbol: "P", color: "" },
-    { symbol: "i", color: WRONG_SPOT_COLOR },
+    { symbol: "i", color: palette[0].name },
     { symbol: "l", color: "" },
     { symbol: "l", color: "" },
     { symbol: "s", color: "" },
