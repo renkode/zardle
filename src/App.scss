@@ -1,16 +1,25 @@
 @import-normalize; /* bring in normalize.css styles */
-$green: #2fbe9b;
-$green-hover: #1ea896;
-$yellow: #ddb917;
-$yellow-hover: #d19e11;
-$orange: #ff7b23;
-$orange-hover: #d65b13;
-$blue: #57b1ee;
-$blue-hover: #3a8fd4;
-$gray: #686a6ba2;
-$gray-hover: #545657a2;
 $red: #e64242;
 $red-hover: #ca3434;
+$orange: #ff7b23;
+$orange-hover: #d65b13;
+$yellow: #ebb800;
+$yellow-hover: #d19e11;
+$green: #2fbe9b;
+$green-hover: #1ea896;
+$blue: #36a1f7;
+$blue-hover: #3a8fd4;
+$purple: #924bcc;
+$purple-hover: #8032c0;
+$brown: #944f26;
+$brown-hover: #793f1e;
+$white: #ffffff;
+$white-hover: #dadada;
+$black: #171717;
+$black-hover: #2c2c2c;
+$gray: #686a6ba2;
+$gray-hover: #545657a2;
+
 $divider: #9493936e;
 $key-color: #cdd0d181;
 $key-hover-color: #aeb0b181;
@@ -112,6 +121,7 @@ body {
   align-items: center;
   user-select: none;
   flex-shrink: 1;
+  flex-grow: 1;
   flex: 1;
   box-sizing: border-box;
 }
@@ -200,6 +210,7 @@ body {
   box-sizing: border-box;
   font-weight: bold;
   color: $light-mode-text;
+  pointer-events: none;
 }
 
 .invalid {
@@ -247,33 +258,6 @@ body {
     background: $key-hover-color;
   }
 
-  .key.green:hover,
-  .copy-btn.green:hover,
-  .share.green:hover {
-    background: $green-hover;
-  }
-
-  .key.yellow:hover,
-  .import-btn.yellow:hover {
-    background: $yellow-hover;
-  }
-
-  .key.orange:hover,
-  .copy-btn.orange:hover,
-  .share.orange:hover {
-    background: $orange-hover;
-  }
-
-  .key.blue:hover,
-  .import-btn.blue:hover {
-    background: $blue-hover;
-  }
-
-  .key.gray:hover,
-  .reset-btn:hover {
-    background: $gray-hover;
-  }
-
   .tile {
     font-size: 4vh;
   }
@@ -281,41 +265,6 @@ body {
   .App {
     height: 100vh;
   }
-}
-
-.green {
-  border: 2px solid $green;
-  background: $green;
-  color: white;
-  border: 0px;
-}
-
-.yellow {
-  border: 2px solid $yellow;
-  background: $yellow;
-  color: white;
-  border: 0px;
-}
-
-.orange {
-  border: 2px solid $orange;
-  background: $orange;
-  color: white;
-  border: 0px;
-}
-
-.blue {
-  border: 2px solid $blue;
-  background: $blue;
-  color: white;
-  border: 0px;
-}
-
-.gray {
-  border: 2px solid $gray;
-  background: $gray;
-  color: white;
-  border: 0px;
 }
 
 .ReactModal__Content {
@@ -565,6 +514,31 @@ hr {
   color: gray;
 }
 
+.palette-list {
+  margin-top: 3%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.palette-list-label {
+  width: 25%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.palettes {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
 textarea {
   width: 100%;
   box-sizing: border-box;
@@ -577,7 +551,7 @@ textarea {
   align-items: flex-end;
 }
 
-.copy-btn,
+.export-btn,
 .import-btn,
 .reset-btn {
   width: 20%;
@@ -585,7 +559,6 @@ textarea {
   font-size: 1rem;
   border: 0px;
   border-radius: 4px;
-  color: white;
   cursor: pointer;
   transition-duration: 0.1s;
 }
@@ -617,4 +590,123 @@ textarea {
 
 .--message-dark-mode {
   background-color: #ffffff;
+}
+
+.red {
+  color: white;
+  background-color: $red;
+  border: 0;
+
+  &:hover {
+    background-color: $red-hover;
+  }
+}
+
+.orange {
+  color: white;
+  background-color: $orange;
+  border: 0;
+
+  &:hover {
+    background-color: $orange-hover;
+  }
+}
+
+.yellow {
+  color: white;
+  background-color: $yellow;
+  border: 0;
+
+  &:hover {
+    background-color: $yellow-hover;
+  }
+}
+
+.green {
+  color: white;
+  background-color: $green;
+  border: 0;
+
+  &:hover {
+    background-color: $green-hover;
+  }
+}
+
+.blue {
+  color: white;
+  background-color: $blue;
+  border: 0;
+
+  &:hover {
+    background-color: $blue-hover;
+  }
+}
+
+.purple {
+  color: white;
+  background-color: $purple;
+  border: 0;
+
+  &:hover {
+    background-color: $purple-hover;
+  }
+}
+
+.brown {
+  color: white;
+  background-color: $brown;
+  border: 0;
+
+  &:hover {
+    background-color: $brown-hover;
+  }
+}
+
+.white {
+  color: $light-mode-text;
+  background-color: $white;
+  border: 0;
+
+  &:hover {
+    background-color: $white-hover;
+  }
+}
+
+.black {
+  color: white;
+  background-color: $black;
+  border: 0;
+
+  &:hover {
+    background-color: $black-hover;
+  }
+}
+
+.gray {
+  color: white;
+  background-color: $gray;
+  border: 0;
+
+  &:hover {
+    background-color: $gray-hover;
+  }
+}
+
+.palette-box {
+  margin: 1%;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid $divider;
+  cursor: pointer;
+}
+
+.unselected {
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.selected {
+  border-radius: 4px;
+  border: 2px solid $divider;
 }

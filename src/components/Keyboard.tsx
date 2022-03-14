@@ -1,6 +1,6 @@
 import "../App.scss";
 import { useState, useEffect, useContext, memo } from "react";
-import { ContrastModeContext } from "../contexts/ContrastModeProvider";
+import { PaletteContext } from "../contexts/PaletteProvider";
 import KeyButton from "./KeyButton";
 
 interface KeyboardProps {
@@ -15,7 +15,7 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
     ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
     ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
   ];
-  const { contrastMode } = useContext(ContrastModeContext);
+  const { palette } = useContext(PaletteContext);
   const [correctLetters, setCorrectLetters] = useState<Array<string>>([]);
   const [misplacedLetters, setMisplacedLetters] = useState<Array<string>>([]);
   const [grays, setGrays] = useState<Array<string>>([]);
@@ -25,8 +25,7 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
     board.forEach((row) => {
       row.forEach((tile) => {
         if (correctLetters.includes(tile.symbol)) return;
-        if (tile.color === "green" || tile.color === "orange")
-          arr.push(tile.symbol);
+        if (tile.color === palette[1].name) arr.push(tile.symbol);
       });
     });
     return arr;
@@ -37,8 +36,7 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
     board.forEach((row) => {
       row.forEach((tile) => {
         if (misplacedLetters.includes(tile.symbol)) return;
-        if (tile.color === "yellow" || tile.color === "blue")
-          arr.push(tile.symbol);
+        if (tile.color === palette[0].name) arr.push(tile.symbol);
       });
     });
     return arr.filter((letter) => !correctLetters.includes(letter));
@@ -85,9 +83,9 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[0].map((symbol, index) => {
           let color = "";
           if (correctLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "orange") : (color = "green");
+            color = palette[1].name;
           } else if (misplacedLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "blue") : (color = "yellow");
+            color = palette[0].name;
           } else if (grays.some((letter) => letter === symbol)) {
             color = "gray";
           }
@@ -106,9 +104,9 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[1].map((symbol, index) => {
           let color = "";
           if (correctLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "orange") : (color = "green");
+            color = palette[1].name;
           } else if (misplacedLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "blue") : (color = "yellow");
+            color = palette[0].name;
           } else if (grays.some((letter) => letter === symbol)) {
             color = "gray";
           }
@@ -127,9 +125,9 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
         {SYMBOLS[2].map((symbol, index) => {
           let color = "";
           if (correctLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "orange") : (color = "green");
+            color = palette[1].name;
           } else if (misplacedLetters.some((letter) => letter === symbol)) {
-            contrastMode ? (color = "blue") : (color = "yellow");
+            color = palette[0].name;
           } else if (grays.some((letter) => letter === symbol)) {
             color = "gray";
           }

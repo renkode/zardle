@@ -1,7 +1,7 @@
 import "../App.scss";
 import { memo, useContext } from "react";
 import Countdown from "react-countdown";
-import { ContrastModeContext } from "../contexts/ContrastModeProvider";
+import { PaletteContext } from "../contexts/PaletteProvider";
 
 interface StatsModalProps {
   playedToday: boolean;
@@ -28,7 +28,8 @@ const StatsModal = ({
   share,
   closeModal,
 }: StatsModalProps) => {
-  const { contrastMode } = useContext(ContrastModeContext);
+  const { palette } = useContext(PaletteContext);
+
   const findMaxFromDistribution = () => {
     let arr: Array<number> = [];
     Object.keys(stats.guessDistribution).map((key) =>
@@ -87,7 +88,7 @@ const StatsModal = ({
           let bgColor = "gray";
           if (won) {
             if (guesses.length === i + 1) {
-              contrastMode ? (bgColor = "orange") : (bgColor = "green");
+              bgColor = palette[1].name;
             }
           }
           return (
@@ -110,9 +111,7 @@ const StatsModal = ({
         </div>
         <div className="share-container">
           <button
-            className={`share ${
-              !playedToday ? "gray" : contrastMode ? "orange" : "green"
-            }`}
+            className={`share ${!playedToday ? "gray" : palette[1].name}`}
             onClick={share}
             disabled={!playedToday}
           >
