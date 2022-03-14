@@ -693,7 +693,7 @@ textarea {
 }
 
 .palette-box {
-  margin: 1%;
+  margin: 2px;
   border-radius: 4px;
   width: 20px;
   height: 20px;
@@ -704,9 +704,15 @@ textarea {
 .unselected {
   border-radius: 4px;
   border: 2px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .selected {
   border-radius: 4px;
   border: 2px solid $divider;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
