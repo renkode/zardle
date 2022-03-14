@@ -9,7 +9,7 @@ import StatsModal from "./components/StatsModal";
 import RulesModal from "./components/RulesModal";
 import OptionsModal from "./components/OptionsModal";
 import { DarkModeContext } from "./contexts/DarkModeProvider";
-import { ContrastModeContext } from "./contexts/ContrastModeProvider";
+import { PaletteContext } from "./contexts/PaletteProvider";
 import WORDS from "./words.json";
 
 function App() {
@@ -32,7 +32,8 @@ function App() {
     guessDistribution: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
   };
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
-  const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
+  const { palette, setPalette } = useContext(PaletteContext);
+
   const firstRender = useRef(false);
   const appRef = useRef<HTMLDivElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
@@ -89,7 +90,7 @@ function App() {
       }
     } catch (err) {
       console.log(err);
-      displayMessage("Error occurred, please refresh", 2000);
+      displayMessage("Error occurred, please refresh", 0);
     }
   }
 
@@ -156,25 +157,12 @@ function App() {
       let rowSquares = "";
       row.forEach((tile) => {
         let square = "";
-        switch (true) {
-          case tile.color === "green":
-            square = "🟩";
-            break;
-          case tile.color === "yellow":
-            square = "🟨";
-            break;
-          case tile.color === "orange":
-            square = "🟧";
-            break;
-          case tile.color === "blue":
-            square = "🟦";
-            break;
-          case tile.color === "gray" && darkMode:
-            square = "⬛";
-            break;
-          default:
-            square = "⬜";
-            break;
+        let paletteObj = palette.find((color) => color.name === tile.color);
+        if (paletteObj) {
+          square = paletteObj.emoji;
+        } else {
+          // blank tile
+          darkMode ? (square = "⬛") : (square = "⬜");
         }
         rowSquares = rowSquares.concat(square);
       });
@@ -260,6 +248,7 @@ function App() {
       displayMessage("Import success!", 1200);
     }
     if (Object.keys(data).length === 0) return;
+    localStorage.removeItem("contrastMode");
     setBoard(data.board || createDefaultBoard(WORD_LENGTH, MAX_GUESSES));
     setGuesses(data.guesses || []);
     setPlayedToday(data.playedToday || false);
@@ -269,8 +258,8 @@ function App() {
     setPlayedAnimation(data.playedAnimation || false);
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
-    setContrastMode(data.contrastMode || false);
     setHardMode(data.hardMode || false);
+    setPalette(data.palette || palette);
     data.playedToday ? setEnableInput(false) : setEnableInput(true);
   }
 
@@ -284,7 +273,6 @@ function App() {
     setStats(data.stats || DEFAULT_STATS);
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
-    setContrastMode(data.contrastMode || false);
     setHardMode(data.hardMode || false);
   }
 
@@ -379,13 +367,13 @@ function App() {
       } else if (DAILY_WORD.current.includes(letter)) {
         // skip if already in array
         if (
-          wrongSpotLetters.some((y) => y.symbol === letter && y.index === index)
+          wrongSpotLetters.some((l) => l.symbol === letter && l.index === index)
         )
           return;
         // yellows should not exceed max occurrences of a letter
         if (
-          wrongSpotLetters.filter((y) => y.symbol === letter).length +
-            correctLetters.filter((g) => g.symbol === letter).length >=
+          wrongSpotLetters.filter((l) => l.symbol === letter).length +
+            correctLetters.filter((l) => l.symbol === letter).length >=
           countLetter(DAILY_WORD.current, letter)
         )
           return;
@@ -402,10 +390,10 @@ function App() {
 
     // actually change colors
     newBoard[currentRow].forEach((tile, index) => {
-      if (wrongSpotLetters.some((y) => y.index === index)) {
-        contrastMode ? (tile.color = "blue") : (tile.color = "yellow");
-      } else if (correctLetters.some((g) => g.index === index)) {
-        contrastMode ? (tile.color = "orange") : (tile.color = "green");
+      if (wrongSpotLetters.some((letter) => letter.index === index)) {
+        tile.color = palette[0].name;
+      } else if (correctLetters.some((letter) => letter.index === index)) {
+        tile.color = palette[1].name;
       } else {
         tile.color = "gray";
       }
@@ -462,27 +450,17 @@ function App() {
     localStorage.setItem("playedAnimation", JSON.stringify(playedAnimation));
     localStorage.setItem("enableWordCheck", JSON.stringify(enableWordCheck));
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    localStorage.setItem("contrastMode", JSON.stringify(contrastMode));
     localStorage.setItem("hardMode", JSON.stringify(hardMode));
+    localStorage.setItem("palette", JSON.stringify(palette));
   }
 
-  function swapToContrastColors(bool: boolean) {
+  function updateColors(oldColor: string, newColor: string) {
     let newBoard = board;
-    if (bool) {
-      newBoard.forEach((row) =>
-        row.forEach((tile) => {
-          if (tile.color === "green") tile.color = "orange";
-          if (tile.color === "yellow") tile.color = "blue";
-        })
-      );
-    } else {
-      newBoard.forEach((row) =>
-        row.forEach((tile) => {
-          if (tile.color === "orange") tile.color = "green";
-          if (tile.color === "blue") tile.color = "yellow";
-        })
-      );
-    }
+    newBoard.forEach((row) =>
+      row.forEach((tile) => {
+        if (tile.color === oldColor) tile.color = newColor;
+      })
+    );
     setBoard(newBoard);
   }
 
@@ -524,7 +502,7 @@ function App() {
     playedAnimation,
     enableWordCheck,
     darkMode,
-    contrastMode,
+    palette,
   ]);
 
   useEffect(() => {
@@ -591,12 +569,13 @@ function App() {
           guessCount={guesses.length}
           hardMode={hardMode}
           setHardMode={setHardMode}
-          swapToContrastColors={swapToContrastColors}
+          updateColors={updateColors}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
           copyDataClipboard={copyDataClipboard}
           importData={importData}
           resetData={resetData}
+          displayMessage={displayMessage}
           closeModal={closeModal}
         />
       );

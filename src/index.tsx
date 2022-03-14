@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import DarkModeProvider from "./contexts/DarkModeProvider";
-import ContrastModeProvider from "./contexts/ContrastModeProvider";
+import PaletteProvider from "./contexts/PaletteProvider";
 
 declare global {
   interface Window {
@@ -39,9 +39,9 @@ if (process.env.NODE_ENV === "production") disableReactDevTools();
 ReactDOM.render(
   <React.StrictMode>
     <DarkModeProvider>
-      <ContrastModeProvider>
+      <PaletteProvider>
         <App />
-      </ContrastModeProvider>
+      </PaletteProvider>
     </DarkModeProvider>
   </React.StrictMode>,
   document.getElementById("root")

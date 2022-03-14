@@ -1,7 +1,7 @@
 import "../App.scss";
 import { useState, useContext, memo } from "react";
 import { DarkModeContext } from "../contexts/DarkModeProvider";
-import { ContrastModeContext } from "../contexts/ContrastModeProvider";
+import { PaletteContext } from "../contexts/PaletteProvider";
 import Switch from "react-switch";
 
 interface OptionsModalProps {
@@ -9,12 +9,13 @@ interface OptionsModalProps {
   guessCount: number;
   hardMode: boolean;
   setHardMode(bool: boolean): void;
-  swapToContrastColors(bool: boolean): void;
+  updateColors(oldColor: string, newColor: string): void;
   enableWordCheck: boolean;
   setEnableWordCheck(bool: boolean): void;
   copyDataClipboard(): void;
   importData(data: string): void;
   resetData(): void;
+  displayMessage(message: string, duration: number): void;
   closeModal(): void;
 }
 
@@ -23,12 +24,13 @@ const OptionsModal = ({
   guessCount,
   hardMode,
   setHardMode,
-  swapToContrastColors,
+  updateColors,
   enableWordCheck,
   setEnableWordCheck,
   copyDataClipboard,
   importData,
   resetData,
+  displayMessage,
   closeModal,
 }: OptionsModalProps) => {
   const HEIGHT = 22;
@@ -36,20 +38,36 @@ const OptionsModal = ({
   const HANDLE_DIAMETER = HEIGHT - 4;
   const [importText, setImportText] = useState("");
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
-  const { contrastMode, setContrastMode } = useContext(ContrastModeContext);
-  let ON_COLOR; //;
-  contrastMode ? (ON_COLOR = "#ff7b23") : (ON_COLOR = "#2fbe9b");
+  const { colors, palette, setPalette } = useContext(PaletteContext);
 
   const toggleBodyDarkMode = (bool: boolean) => {
     bool
       ? document.body.classList.add("--dark-mode")
       : document.body.classList.remove("--dark-mode");
     setDarkMode(bool);
-  };
-
-  const toggleContrastMode = (bool: boolean) => {
-    setContrastMode(bool);
-    swapToContrastColors(bool);
+    // invert black/white palette swatch on dark mode toggle
+    let newPalette = null;
+    if (bool && palette.filter((color) => color.name === "black").length > 0) {
+      // convert to white
+      updateColors("black", "white");
+      const whiteObj = colors.find((color) => color.name === "white");
+      newPalette = palette.map((color) => {
+        if (color.name === "black" && whiteObj) return whiteObj;
+        return color;
+      });
+    } else if (
+      !bool &&
+      palette.filter((color) => color.name === "white").length > 0
+    ) {
+      // convert to black
+      updateColors("white", "black");
+      const blackObj = colors.find((color) => color.name === "black");
+      newPalette = palette.map((color) => {
+        if (color.name === "white" && blackObj) return blackObj;
+        return color;
+      });
+    }
+    if (newPalette) setPalette(newPalette);
   };
 
   return (
@@ -76,7 +94,8 @@ const OptionsModal = ({
           height={HEIGHT}
           width={WIDTH}
           handleDiameter={HANDLE_DIAMETER}
-          onColor={ON_COLOR}
+          boxShadow={"0px 0px 4px rgb(0,0,0,50%)"}
+          onColor={palette[1].hex}
           checkedIcon={false}
           uncheckedIcon={false}
         />
@@ -92,26 +111,8 @@ const OptionsModal = ({
           height={HEIGHT}
           width={WIDTH}
           handleDiameter={HANDLE_DIAMETER}
-          onColor={ON_COLOR}
-          checkedIcon={false}
-          uncheckedIcon={false}
-        />
-      </div>
-
-      <hr />
-
-      <div className="option-container">
-        <div className="label-container">
-          <span className="option-label">High Contrast Mode</span>
-          <span className="option-description">For improved color vision</span>
-        </div>
-        <Switch
-          onChange={toggleContrastMode}
-          checked={contrastMode}
-          height={HEIGHT}
-          width={WIDTH}
-          handleDiameter={HANDLE_DIAMETER}
-          onColor={ON_COLOR}
+          boxShadow={"0px 0px 4px rgb(0,0,0,50%)"}
+          onColor={palette[1].hex}
           checkedIcon={false}
           uncheckedIcon={false}
         />
@@ -132,7 +133,8 @@ const OptionsModal = ({
           height={HEIGHT}
           width={WIDTH}
           handleDiameter={HANDLE_DIAMETER}
-          onColor={ON_COLOR}
+          boxShadow={"0px 0px 4px rgb(0,0,0,50%)"}
+          onColor={palette[1].hex}
           checkedIcon={false}
           uncheckedIcon={false}
         />
@@ -142,10 +144,90 @@ const OptionsModal = ({
 
       <div className="option-container">
         <div className="label-container">
+          <span className="option-label">
+            Palette<span style={{ color: "red" }}> ᴺᴱᵂ</span>
+          </span>
+          <span className="option-description">Customize your theme</span>
+        </div>
+      </div>
+
+      <div className="palette-list-container">
+        <span className="palette-list">
+          <span className="palette-list-label">Primary</span>
+          <span className="palettes">
+            {colors.map((color, index) => (
+              <div
+                key={index}
+                className={
+                  color.name === palette[1].name ? "selected" : "unselected"
+                }
+              >
+                <div
+                  className={`palette-box ${color.name}`}
+                  onClick={() => {
+                    if (palette[0].name === color.name) {
+                      displayMessage("Color is already in use", 1200);
+                      return;
+                    }
+                    if (color.name === "white" && !darkMode) {
+                      displayMessage("Cannot use white in Light Mode", 1200);
+                      return;
+                    }
+                    if (color.name === "black" && darkMode) {
+                      displayMessage("Cannot use black in Dark Mode", 1200);
+                      return;
+                    }
+                    updateColors(palette[1].name, color.name);
+                    setPalette([palette[0], color]);
+                  }}
+                />
+              </div>
+            ))}
+          </span>
+        </span>
+        <span className="palette-list">
+          <span className="palette-list-label">Secondary</span>
+          <span className="palettes">
+            {colors.map((color, index) => (
+              <div
+                key={index}
+                className={
+                  color.name === palette[0].name ? "selected" : "unselected"
+                }
+              >
+                <div
+                  className={`palette-box ${color.name}`}
+                  onClick={() => {
+                    if (palette[1].name === color.name) {
+                      displayMessage("Color is already in use", 1200);
+                      return;
+                    }
+                    if (color.name === "white" && !darkMode) {
+                      displayMessage("Cannot use white in Light Mode", 1200);
+                      return;
+                    }
+                    if (color.name === "black" && darkMode) {
+                      displayMessage("Cannot use black in Dark Mode", 1200);
+                      return;
+                    }
+                    updateColors(palette[0].name, color.name);
+                    setPalette([color, palette[1]]);
+                  }}
+                />
+              </div>
+            ))}
+          </span>
+        </span>
+      </div>
+
+      <hr />
+
+      <div className="option-container">
+        <div className="label-container">
           <span className="option-label">Export Data</span>
         </div>
         <button
-          className={`copy-btn ${contrastMode ? "orange" : "green"}`}
+          className={`export-btn ${palette[1].name}`}
           onClick={copyDataClipboard}
         >
           Copy
@@ -160,14 +242,13 @@ const OptionsModal = ({
         </div>
       </div>
       <div className="import-container">
-        {" "}
         <textarea
           name="textValue"
           onChange={(e) => setImportText(e.target.value)}
           rows={3}
         />
         <button
-          className={`import-btn ${contrastMode ? "blue" : "yellow"}`}
+          className={`import-btn ${palette[0].name}`}
           onClick={() => importData(importText)}
         >
           Import
@@ -180,7 +261,7 @@ const OptionsModal = ({
         <div className="label-container">
           <span className="option-label">Reset Data</span>
         </div>
-        <button className="reset-btn" onClick={resetData}>
+        <button className="reset-btn gray" onClick={resetData}>
           Reset
         </button>
       </div>
