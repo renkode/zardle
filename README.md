@@ -13,6 +13,7 @@ Made from the ground up with React, Typescript and Cloudflare's serverless API, 
 There are a few new things:
 
 - Toggleable visual word check, which shows you if your current 5-letter guess is NOT a valid word without having to submit
+- The original yellow and green palette can be changed to other colors
 - The ability to export and import data across devices and browsers
 - Daily words are hosted on Cloudflare instead of locally, and resets every 12 AM EST
 
