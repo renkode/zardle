@@ -253,20 +253,6 @@ body {
   font-size: 2.5vh;
 }
 
-@media only screen and (min-width: 1000px) {
-  .key:hover {
-    background: $key-hover-color;
-  }
-
-  .tile {
-    font-size: 4vh;
-  }
-
-  .App {
-    height: 100vh;
-  }
-}
-
 .ReactModal__Content {
   width: min(500px, 100vw);
   height: fit-content;
@@ -715,4 +701,29 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media only screen and (min-width: 768px) {
+  .key:hover {
+    background: $key-hover-color;
+  }
+
+  .tile {
+    font-size: 4vh;
+  }
+
+  .App {
+    height: 100vh;
+  }
+
+  .game {
+    justify-content: space-between;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .key,
+  .palette-box {
+    pointer-events: none;
+  }
 }

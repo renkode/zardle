@@ -248,7 +248,6 @@ function App() {
       displayMessage("Import success!", 1200);
     }
     if (Object.keys(data).length === 0) return;
-    localStorage.removeItem("contrastMode");
     setBoard(data.board || createDefaultBoard(WORD_LENGTH, MAX_GUESSES));
     setGuesses(data.guesses || []);
     setPlayedToday(data.playedToday || false);
@@ -274,6 +273,7 @@ function App() {
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
     setHardMode(data.hardMode || false);
+    setPalette(data.palette || palette);
   }
 
   function handleKeyDown(e: any, symbol: string = "") {
