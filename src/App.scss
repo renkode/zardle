@@ -582,9 +582,10 @@ textarea {
   color: white;
   background-color: $red;
   border: 0;
-
-  &:hover {
-    background-color: $red-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $red-hover;
+    }
   }
 }
 
@@ -592,9 +593,10 @@ textarea {
   color: white;
   background-color: $orange;
   border: 0;
-
-  &:hover {
-    background-color: $orange-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $orange-hover;
+    }
   }
 }
 
@@ -602,9 +604,10 @@ textarea {
   color: white;
   background-color: $yellow;
   border: 0;
-
-  &:hover {
-    background-color: $yellow-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $yellow-hover;
+    }
   }
 }
 
@@ -612,9 +615,10 @@ textarea {
   color: white;
   background-color: $green;
   border: 0;
-
-  &:hover {
-    background-color: $green-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $green-hover;
+    }
   }
 }
 
@@ -622,9 +626,10 @@ textarea {
   color: white;
   background-color: $blue;
   border: 0;
-
-  &:hover {
-    background-color: $blue-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $blue-hover;
+    }
   }
 }
 
@@ -632,9 +637,10 @@ textarea {
   color: white;
   background-color: $purple;
   border: 0;
-
-  &:hover {
-    background-color: $purple-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $purple-hover;
+    }
   }
 }
 
@@ -642,9 +648,10 @@ textarea {
   color: white;
   background-color: $brown;
   border: 0;
-
-  &:hover {
-    background-color: $brown-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $brown-hover;
+    }
   }
 }
 
@@ -652,9 +659,10 @@ textarea {
   color: $light-mode-text;
   background-color: $white;
   border: 0;
-
-  &:hover {
-    background-color: $white-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $white-hover;
+    }
   }
 }
 
@@ -662,9 +670,10 @@ textarea {
   color: white;
   background-color: $black;
   border: 0;
-
-  &:hover {
-    background-color: $black-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $black-hover;
+    }
   }
 }
 
@@ -672,9 +681,10 @@ textarea {
   color: white;
   background-color: $gray;
   border: 0;
-
-  &:hover {
-    background-color: $gray-hover;
+  @media only screen and (min-width: 768px) {
+    &:hover {
+      background-color: $gray-hover;
+    }
   }
 }
 
