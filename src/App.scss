@@ -722,9 +722,8 @@ textarea {
 }
 
 @media only screen and (max-width: 600px) {
-  .key,
-  .palette-box {
-    pointer-events: none;
+  .key:hover,
+  .palette-box:hover {
   }
 
   .keyboard {
