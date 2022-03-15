@@ -732,16 +732,12 @@ textarea {
 }
 
 @media only screen and (max-width: 600px) {
-  .key:hover,
-  .palette-box:hover {
-  }
-
   .keyboard {
     margin: 0;
   }
 
   .gameboard {
-    margin: 3vh;
+    margin: 2.9vh;
     padding-top: 8px;
   }
 
