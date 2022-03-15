@@ -46,14 +46,12 @@ $themes: (
 
 html,
 body {
-  width: 100%;
-  height: 100%;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .App {
   width: 100vw;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -721,10 +719,20 @@ textarea {
   }
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 600px) {
   .key,
   .palette-box {
     pointer-events: none;
+  }
+
+  .keyboard {
+    margin: 0;
+    margin-bottom: 4px;
+  }
+
+  .gameboard {
+    padding-top: 8px;
+    margin: auto;
   }
 
   .game {
