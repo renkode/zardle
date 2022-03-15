@@ -1,7 +1,7 @@
 @import-normalize; /* bring in normalize.css styles */
 $red: #e64242;
 $red-hover: #ca3434;
-$orange: #ff7b23;
+$orange: #f5761b;
 $orange-hover: #d65b13;
 $yellow: #ebb800;
 $yellow-hover: #d19e11;
@@ -251,6 +251,24 @@ body {
 
 .fa-delete-left {
   font-size: 2.5vh;
+}
+
+@media only screen and (min-width: 768px) {
+  .key:hover {
+    background: $key-hover-color;
+  }
+
+  .tile {
+    font-size: 4vh;
+  }
+
+  .App {
+    height: 100vh;
+  }
+
+  .game {
+    justify-content: space-between;
+  }
 }
 
 .ReactModal__Content {
@@ -711,24 +729,6 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-@media only screen and (min-width: 768px) {
-  .key:hover {
-    background: $key-hover-color;
-  }
-
-  .tile {
-    font-size: 4vh;
-  }
-
-  .App {
-    height: 100vh;
-  }
-
-  .game {
-    justify-content: space-between;
-  }
 }
 
 @media only screen and (max-width: 600px) {

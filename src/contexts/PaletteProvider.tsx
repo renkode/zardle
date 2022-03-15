@@ -9,7 +9,7 @@ interface PaletteContextState {
 export const initialPaletteState: PaletteContextState = {
   colors: [
     { name: "red", hex: "#e82a2a", emoji: "🟥" },
-    { name: "orange", hex: "#ff7b23", emoji: "🟧" },
+    { name: "orange", hex: "#f5761b", emoji: "🟧" },
     { name: "yellow", hex: "#ebb800", emoji: "🟨" },
     { name: "green", hex: "#2fbe9b", emoji: "🟩" },
     { name: "blue", hex: "#36a1f7", emoji: "🟦" },

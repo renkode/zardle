@@ -253,8 +253,8 @@ function App() {
     setPlayedToday(data.playedToday || false);
     setWon(didGameEnd(data.guesses || []));
     setCurrentRow(data.guesses.length || 0);
-    setStats(data.stats || DEFAULT_STATS);
     setPlayedAnimation(data.playedAnimation || false);
+    setStats(data.stats || DEFAULT_STATS);
     setEnableWordCheck(data.enableWordCheck || false);
     setDarkMode(data.darkMode || false);
     setHardMode(data.hardMode || false);
@@ -263,6 +263,7 @@ function App() {
   }
 
   function loadMiscSettings() {
+    // from localstorage
     let data: { [key: string]: any } = {};
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -454,7 +455,7 @@ function App() {
     localStorage.setItem("palette", JSON.stringify(palette));
   }
 
-  function updateColors(oldColor: string, newColor: string) {
+  function updateColor(oldColor: string, newColor: string) {
     let newBoard = board;
     newBoard.forEach((row) =>
       row.forEach((tile) => {
@@ -569,7 +570,7 @@ function App() {
           guessCount={guesses.length}
           hardMode={hardMode}
           setHardMode={setHardMode}
-          updateColors={updateColors}
+          updateColor={updateColor}
           enableWordCheck={enableWordCheck}
           setEnableWordCheck={setEnableWordCheck}
           copyDataClipboard={copyDataClipboard}

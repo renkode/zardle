@@ -9,7 +9,7 @@ interface OptionsModalProps {
   guessCount: number;
   hardMode: boolean;
   setHardMode(bool: boolean): void;
-  updateColors(oldColor: string, newColor: string): void;
+  updateColor(oldColor: string, newColor: string): void;
   enableWordCheck: boolean;
   setEnableWordCheck(bool: boolean): void;
   copyDataClipboard(): void;
@@ -24,7 +24,7 @@ const OptionsModal = ({
   guessCount,
   hardMode,
   setHardMode,
-  updateColors,
+  updateColor,
   enableWordCheck,
   setEnableWordCheck,
   copyDataClipboard,
@@ -49,7 +49,7 @@ const OptionsModal = ({
     let newPalette = null;
     if (bool && palette.filter((color) => color.name === "black").length > 0) {
       // convert to white
-      updateColors("black", "white");
+      updateColor("black", "white");
       const whiteObj = colors.find((color) => color.name === "white");
       newPalette = palette.map((color) => {
         if (color.name === "black" && whiteObj) return whiteObj;
@@ -60,7 +60,7 @@ const OptionsModal = ({
       palette.filter((color) => color.name === "white").length > 0
     ) {
       // convert to black
-      updateColors("white", "black");
+      updateColor("white", "black");
       const blackObj = colors.find((color) => color.name === "black");
       newPalette = palette.map((color) => {
         if (color.name === "white" && blackObj) return blackObj;
@@ -68,6 +68,32 @@ const OptionsModal = ({
       });
     }
     if (newPalette) setPalette(newPalette);
+  };
+
+  const handlePaletteChange = (
+    color: { name: string; hex: string; emoji: string },
+    index: number
+  ) => {
+    //0 = secondary, 1 = primary, yes i know that's unintuitive
+    if (
+      (index === 0 && palette[1].name === color.name) ||
+      (index === 1 && palette[0].name === color.name)
+    ) {
+      displayMessage("Color is already in use", 1200);
+      return;
+    }
+    if (color.name === "white" && !darkMode) {
+      displayMessage("Cannot use white in Light Mode", 1200);
+      return;
+    }
+    if (color.name === "black" && darkMode) {
+      displayMessage("Cannot use black in Dark Mode", 1200);
+      return;
+    }
+    let newPalette = [...palette]; // don't set it directly to palette or else it changes palette somehow??
+    newPalette[index] = color;
+    updateColor(palette[index].name, color.name);
+    setPalette(newPalette);
   };
 
   return (
@@ -164,22 +190,7 @@ const OptionsModal = ({
               >
                 <div
                   className={`palette-box ${color.name}`}
-                  onClick={() => {
-                    if (palette[0].name === color.name) {
-                      displayMessage("Color is already in use", 1200);
-                      return;
-                    }
-                    if (color.name === "white" && !darkMode) {
-                      displayMessage("Cannot use white in Light Mode", 1200);
-                      return;
-                    }
-                    if (color.name === "black" && darkMode) {
-                      displayMessage("Cannot use black in Dark Mode", 1200);
-                      return;
-                    }
-                    updateColors(palette[1].name, color.name);
-                    setPalette([palette[0], color]);
-                  }}
+                  onClick={() => handlePaletteChange(color, 1)}
                 />
               </div>
             ))}
@@ -197,22 +208,7 @@ const OptionsModal = ({
               >
                 <div
                   className={`palette-box ${color.name}`}
-                  onClick={() => {
-                    if (palette[1].name === color.name) {
-                      displayMessage("Color is already in use", 1200);
-                      return;
-                    }
-                    if (color.name === "white" && !darkMode) {
-                      displayMessage("Cannot use white in Light Mode", 1200);
-                      return;
-                    }
-                    if (color.name === "black" && darkMode) {
-                      displayMessage("Cannot use black in Dark Mode", 1200);
-                      return;
-                    }
-                    updateColors(palette[0].name, color.name);
-                    setPalette([color, palette[1]]);
-                  }}
+                  onClick={() => handlePaletteChange(color, 0)}
                 />
               </div>
             ))}
