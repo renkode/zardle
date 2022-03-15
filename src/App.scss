@@ -51,7 +51,7 @@ body {
 
 .App {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -727,12 +727,11 @@ textarea {
 
   .keyboard {
     margin: 0;
-    margin-bottom: 4px;
   }
 
   .gameboard {
+    margin: 3vh;
     padding-top: 8px;
-    margin: auto;
   }
 
   .game {
