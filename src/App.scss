@@ -501,11 +501,16 @@ hr {
   align-items: center;
 }
 
+.palette-label-container,
 .label-container {
   display: flex;
   flex-direction: column;
   width: 70%;
   flex-shrink: 1;
+}
+
+.palette-label-container {
+  width: 100%;
 }
 
 .option-label {

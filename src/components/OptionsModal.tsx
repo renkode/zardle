@@ -169,11 +169,11 @@ const OptionsModal = ({
       <hr />
 
       <div className="option-container">
-        <div className="label-container">
-          <span className="option-label">
-            Palette<span style={{ color: "red" }}> ᴺᴱᵂ</span>
+        <div className="palette-label-container">
+          <span className="option-label">Palette</span>
+          <span className="option-description">
+            Customize your theme (correct answers are in primary color)
           </span>
-          <span className="option-description">Customize your theme</span>
         </div>
       </div>
 
