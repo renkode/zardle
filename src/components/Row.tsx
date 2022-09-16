@@ -1,7 +1,8 @@
 import "../App.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Tile from "./Tile";
 import ReactCardFlip from "react-card-flip";
+import { PaletteContext } from "../contexts/PaletteProvider";
 
 interface RowProps {
   tileSize: string;
@@ -32,6 +33,7 @@ const Row = ({
   const [flip, setFlip] = useState<Array<boolean>>([]);
   const [bounce, setBounce] = useState<Array<boolean>>([]);
   const [count, setCount] = useState(0);
+  const { palette } = useContext(PaletteContext);
 
   function flipTile(index: number) {
     let arr = flip;
@@ -45,8 +47,8 @@ const Row = ({
     setBounce(arr);
   }
 
+  // reset row
   useEffect(() => {
-    // reset row
     if (boardRow.every((tile) => tile.symbol === "")) {
       setCount(0);
       setFlip([]);
@@ -55,8 +57,8 @@ const Row = ({
     }
   }, [boardRow]);
 
+  // animate/flip tiles individually
   useEffect(() => {
-    // flip tile individually
     if (
       !active &&
       boardRow.filter((tile) => tile.symbol.length > 0).length >=
@@ -72,7 +74,7 @@ const Row = ({
     if (
       !playedAnimation &&
       boardRow.every(
-        (tile) => tile.color === "green" || tile.color === "orange"
+        (tile) => tile.color === palette[1].name // primary/correct color
       )
     ) {
       if (flip[count]) {

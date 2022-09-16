@@ -26,6 +26,7 @@ const Gameboard = ({
   playedAnimation,
   setPlayedAnimation,
 }: BoardProps) => {
+  // create row object array for the current guess
   let emptySpaceLength = WORD_LENGTH - currentGuess.length;
   let rowInput = Array.from({ length: currentGuess.length }, (_, i) => ({
     symbol: currentGuess[i],

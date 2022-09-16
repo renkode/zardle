@@ -66,7 +66,7 @@ function App() {
   const [won, setWon] = useState<boolean | null>(null);
   const [backspacing, setBackspacing] = useState(false);
 
-  //=======================================================================
+  //INITIALIZE FUNCTIONS=======================================================================
 
   async function fetchDailyWord() {
     try {
@@ -194,6 +194,8 @@ function App() {
     // gameboard: [ [{}, ... ,{}], ..., [{}, ... ,{}] ]
   }
 
+  //RESET FUNCTIONS=======================================================================
+
   function resetBoard() {
     const board = createDefaultBoard(WORD_LENGTH, MAX_GUESSES);
     setBoard(board);
@@ -228,6 +230,8 @@ function App() {
       closeModal();
     }
   }
+
+  //LOADING FUNCTIONS=======================================================================
 
   function loadGame(storage: Storage, importing: boolean = false) {
     let data: { [key: string]: any } = {};
@@ -276,6 +280,8 @@ function App() {
     setHardMode(data.hardMode || false);
     setPalette(data.palette || palette);
   }
+
+  //GAME LOGIC=======================================================================
 
   function handleKeyDown(e: any, symbol: string = "") {
     if (playedToday || !enableInput) return;
@@ -477,13 +483,15 @@ function App() {
     setEnableInput(true);
   }
 
-  //=======================================================================
+  //USE EFFECTS=======================================================================
 
+  // focus app so you can immediately use the keyboard
   useEffect(() => {
     fetchDailyWord();
     if (appRef.current) appRef.current.focus();
   }, []);
 
+  // update highest streak if streak is increased
   useEffect(() => {
     if (stats.streak > stats.highestStreak) {
       let tempStats = stats;
@@ -492,6 +500,7 @@ function App() {
     }
   }, [stats.streak]);
 
+  // after initial render, save game (localStorage) whenever game data changes
   useEffect(() => {
     if (firstRender.current) saveGame();
     firstRender.current = true;
@@ -506,6 +515,7 @@ function App() {
     palette,
   ]);
 
+  // validate current 5 letter input/guess for Visual Word Check
   useEffect(() => {
     if (currentGuess.length < WORD_LENGTH) {
       setIsCurrentInputValid(true);
@@ -515,7 +525,7 @@ function App() {
     setIsCurrentInputValid(isValid);
   }, [currentGuess]);
 
-  //=======================================================================
+  //MODAL=======================================================================
 
   Modal.setAppElement("#root");
 
@@ -584,6 +594,8 @@ function App() {
     default:
       modal = <div></div>;
   }
+
+  //RENDER=======================================================================
 
   return (
     <div

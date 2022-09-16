@@ -59,6 +59,7 @@ const Keyboard = ({ board, guesses, handleKeyDown }: KeyboardProps) => {
     setCorrectLetters([]);
   };
 
+  // auto-reset, update keyboard key colors after 1.3 seconds
   useEffect(() => {
     if (
       guesses.length === 0 &&
